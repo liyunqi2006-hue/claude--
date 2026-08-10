@@ -19,11 +19,12 @@ function generateOrderNo(): string {
   return `ORD${ts}${rand}`.toUpperCase();
 }
 
+const RECENT_ORDERS_COOKIE = "recent_order_nos";
+const RECENT_ORDERS_MAX = 10;
+const RECENT_ORDERS_MAX_AGE = 60 * 60 * 24 * 30;
+
 export async function POST(request: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "请先登录" }, { status: 401 });
-  }
 
   const body = await request.json();
   const parsed = checkoutSchema.safeParse(body);
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
   const order = await prisma.order.create({
     data: {
       orderNo,
-      userId: session.user.id,
+      userId: session?.user?.id,
       productId: product.id,
       quantity,
       amountUSD,
@@ -63,5 +64,20 @@ export async function POST(request: Request) {
     type: payChannel as EpayType,
   });
 
-  return NextResponse.json({ orderNo: order.orderNo, paymentUrl });
+  const response = NextResponse.json({ orderNo: order.orderNo, paymentUrl });
+
+  const existing = request.headers.get("cookie")?.match(new RegExp(`${RECENT_ORDERS_COOKIE}=([^;]*)`))?.[1];
+  const previousOrderNos = existing ? decodeURIComponent(existing).split(",").filter(Boolean) : [];
+  const nextOrderNos = [order.orderNo, ...previousOrderNos.filter((no) => no !== order.orderNo)].slice(
+    0,
+    RECENT_ORDERS_MAX,
+  );
+  response.cookies.set(RECENT_ORDERS_COOKIE, nextOrderNos.join(","), {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: RECENT_ORDERS_MAX_AGE,
+  });
+
+  return response;
 }

@@ -23,7 +23,7 @@ export default async function AdminOrderDetailPage({
       <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-5">
         <dl className="space-y-3 text-sm">
           <Row label="商品" value={order.product.name} />
-          <Row label="用户邮箱" value={order.user.email} />
+          <Row label="用户邮箱" value={order.user?.email ?? "游客下单"} />
           <Row label="联系邮箱" value={order.contactEmail} />
           <Row label="订单状态" value={orderStatusLabels[order.status]} />
           <Row label="支付金额" value={`$${order.amountUSD.toString()} (¥${order.amountCNY.toString()})`} />

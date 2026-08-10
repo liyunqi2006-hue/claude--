@@ -84,8 +84,8 @@ model Product {
 model Order {
   id           String        @id @default(cuid())
   orderNo      String        @unique
-  userId       String
-  user         User          @relation(fields: [userId], references: [id])
+  userId       String?
+  user         User?         @relation(fields: [userId], references: [id])
   productId    String
   product      Product       @relation(fields: [productId], references: [id])
   quantity     Int           @default(1)
@@ -142,4 +142,17 @@ model AuditLog {
 
   @@index([adminId])
   @@map("audit_logs")
+}
+
+model VerificationCode {
+  id        String    @id @default(cuid())
+  email     String
+  purpose   String
+  code      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email, purpose])
+  @@map("verification_codes")
 }

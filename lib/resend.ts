@@ -25,3 +25,16 @@ export async function sendOrderFulfilledNotice(toEmail: string, orderNo: string)
     text: `您的订单 ${orderNo} 已处理完成，请登录用户中心查看详情。`,
   });
 }
+
+export async function sendVerificationCode(toEmail: string, code: string) {
+  if (!resend) {
+    console.info(`[verification] ${toEmail} -> ${code}`);
+    return;
+  }
+  await resend.emails.send({
+    from: FROM,
+    to: toEmail,
+    subject: "订单查询验证码",
+    text: `您的验证码是 ${code}，10 分钟内有效。如非本人操作请忽略此邮件。`,
+  });
+}

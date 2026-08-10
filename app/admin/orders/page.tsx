@@ -37,7 +37,7 @@ export default async function AdminOrdersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div>{order.product.name}</div>
-                  <div className="mt-1 text-neutral-500">{order.user.email}</div>
+                  <div className="mt-1 text-neutral-500">{order.user?.email ?? "游客下单"}</div>
                 </td>
                 <td className="px-4 py-3">
                   <div>${order.amountUSD.toString()} (¥{order.amountCNY.toString()})</div>
