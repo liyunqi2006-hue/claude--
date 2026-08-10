@@ -21,7 +21,7 @@ enum ProductType {
 enum SubscriptionPlan {
   pro
   max5x
-  max30x
+  max20x
 }
 
 enum SubscriptionDuration {
@@ -72,7 +72,7 @@ model Product {
   duration     SubscriptionDuration?
   creditAmount Decimal?              @db.Decimal(10, 2)
   name         String
-  priceCNY     Decimal               @db.Decimal(10, 2)
+  priceUSD     Decimal               @db.Decimal(10, 2)
   active       Boolean               @default(true)
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
@@ -89,6 +89,7 @@ model Order {
   productId    String
   product      Product       @relation(fields: [productId], references: [id])
   quantity     Int           @default(1)
+  amountUSD    Decimal       @db.Decimal(10, 2)
   amountCNY    Decimal       @db.Decimal(10, 2)
   status       OrderStatus   @default(pending)
   payChannel   PayChannel?

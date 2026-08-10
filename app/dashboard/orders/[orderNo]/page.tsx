@@ -35,7 +35,7 @@ export default async function OrderDetailPage({
 
       <dl className="space-y-2 text-sm">
         <Row label="状态" value={orderStatusLabels[order.status]} />
-        <Row label="金额" value={`¥${order.amountCNY.toString()}`} />
+        <Row label="金额" value={`$${order.amountUSD.toString()} (¥${order.amountCNY.toString()})`} />
         {order.payChannel && (
           <Row label="支付方式" value={payChannelLabels[order.payChannel]} />
         )}

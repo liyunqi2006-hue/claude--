@@ -26,7 +26,7 @@ export default async function AdminOrderDetailPage({
           <Row label="用户邮箱" value={order.user.email} />
           <Row label="联系邮箱" value={order.contactEmail} />
           <Row label="订单状态" value={orderStatusLabels[order.status]} />
-          <Row label="支付金额" value={`¥${order.amountCNY.toString()}`} />
+          <Row label="支付金额" value={`$${order.amountUSD.toString()} (¥${order.amountCNY.toString()})`} />
           <Row label="支付方式" value={order.payChannel ? payChannelLabels[order.payChannel] : "未支付"} />
           {order.tradeNo && <Row label="支付平台交易号" value={order.tradeNo} />}
           {order.contactNote && <Row label="用户备注" value={order.contactNote} />}

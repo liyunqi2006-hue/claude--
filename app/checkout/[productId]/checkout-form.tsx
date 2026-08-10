@@ -9,11 +9,13 @@ const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
 export default function CheckoutForm({
   productId,
   unitPrice,
+  exchangeRate,
   defaultEmail,
   isSubscription,
 }: {
   productId: string;
   unitPrice: number;
+  exchangeRate: number;
   defaultEmail: string;
   isSubscription: boolean;
 }) {
@@ -25,7 +27,8 @@ export default function CheckoutForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const total = (unitPrice * quantity).toFixed(2);
+  const totalUSD = (unitPrice * quantity).toFixed(2);
+  const totalCNY = (unitPrice * quantity * exchangeRate).toFixed(2);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -109,7 +112,10 @@ export default function CheckoutForm({
       </div>
 
       <div className="flex items-center justify-between border-t border-neutral-200 pt-4">
-        <span className="text-lg font-semibold">合计 ¥{total}</span>
+        <span className="text-lg font-semibold">
+          合计 ${totalUSD}
+          <span className="ml-2 text-sm font-normal text-neutral-500">≈ ¥{totalCNY}</span>
+        </span>
         <button
           type="submit"
           disabled={loading}

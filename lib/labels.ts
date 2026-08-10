@@ -1,7 +1,7 @@
 export const planLabels: Record<string, string> = {
   pro: "Pro",
   max5x: "Max 5x",
-  max30x: "Max 30x",
+  max20x: "Max 20x",
 };
 
 export const durationLabels: Record<string, string> = {

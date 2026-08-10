@@ -40,7 +40,7 @@ export default async function AdminOrdersPage() {
                   <div className="mt-1 text-neutral-500">{order.user.email}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <div>¥{order.amountCNY.toString()}</div>
+                  <div>${order.amountUSD.toString()} (¥{order.amountCNY.toString()})</div>
                   <div className="mt-1 text-neutral-500">{order.payChannel ? payChannelLabels[order.payChannel] : "未支付"}</div>
                 </td>
                 <td className="px-4 py-3">{orderStatusLabels[order.status]}</td>

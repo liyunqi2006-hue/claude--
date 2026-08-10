@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { buildPaymentUrl, type EpayType } from "@/lib/epay";
+import { usdToCny } from "@/lib/exchange";
 
 const checkoutSchema = z.object({
   productId: z.string().min(1),
@@ -36,7 +37,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "商品不存在或已下架" }, { status: 404 });
   }
 
-  const amount = Number(product.priceCNY) * quantity;
+  const amountUSD = Number(product.priceUSD) * quantity;
+  const amountCNY = usdToCny(amountUSD);
   const orderNo = generateOrderNo();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -46,7 +48,8 @@ export async function POST(request: Request) {
       userId: session.user.id,
       productId: product.id,
       quantity,
-      amountCNY: amount,
+      amountUSD,
+      amountCNY,
       contactEmail,
       contactNote,
       expiresAt,
@@ -56,7 +59,7 @@ export async function POST(request: Request) {
   const paymentUrl = buildPaymentUrl({
     outTradeNo: order.orderNo,
     name: product.name,
-    money: amount.toFixed(2),
+    money: amountCNY.toFixed(2),
     type: payChannel as EpayType,
   });
 

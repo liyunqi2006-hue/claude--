@@ -5,7 +5,7 @@ import { planLabels, durationLabels } from "@/lib/labels";
 export default async function HomePage() {
   const products = await prisma.product.findMany({
     where: { active: true },
-    orderBy: [{ type: "asc" }, { priceCNY: "asc" }],
+    orderBy: [{ type: "asc" }, { priceUSD: "asc" }],
   });
 
   const subscriptions = products.filter((p) => p.type === "subscription");
@@ -47,7 +47,7 @@ export default async function HomePage() {
                     {item.duration ? durationLabels[item.duration] : ""}
                   </div>
                   <div className="mt-2 text-2xl font-bold">
-                    ¥{item.priceCNY.toString()}
+                    ${item.priceUSD.toString()}
                   </div>
                 </Link>
               ))}
@@ -70,7 +70,7 @@ export default async function HomePage() {
                   额度 ¥{item.creditAmount?.toString()}
                 </div>
                 <div className="mt-2 text-2xl font-bold">
-                  ¥{item.priceCNY.toString()}
+                  ${item.priceUSD.toString()}
                 </div>
               </Link>
             ))}

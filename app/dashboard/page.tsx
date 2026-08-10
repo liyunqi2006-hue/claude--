@@ -45,7 +45,7 @@ export default async function DashboardPage() {
               <div className="mt-1 flex items-center justify-between text-sm text-neutral-500">
                 <span>{order.orderNo}</span>
                 <span>
-                  ¥{order.amountCNY.toString()}
+                  ${order.amountUSD.toString()} (¥{order.amountCNY.toString()})
                   {order.payChannel ? ` · ${payChannelLabels[order.payChannel]}` : ""}
                 </span>
               </div>
