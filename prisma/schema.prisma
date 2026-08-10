@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductType {
+  subscription
+  api_credit
+}
+
+enum SubscriptionPlan {
+  pro
+  max5x
+  max30x
+}
+
+enum SubscriptionDuration {
+  month
+  quarter
+  half_year
+  year
+}
+
+enum OrderStatus {
+  pending
+  paid
+  fulfilling
+  completed
+  refunded
+  cancelled
+}
+
+enum PayChannel {
+  alipay
+  wxpay
+  bank
+  applepay
+  link
+}
+
+enum AdminRole {
+  admin
+  operator
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+
+  @@map("users")
+}
+
+model Product {
+  id           String                @id @default(cuid())
+  type         ProductType
+  plan         SubscriptionPlan?
+  duration     SubscriptionDuration?
+  creditAmount Decimal?              @db.Decimal(10, 2)
+  name         String
+  priceCNY     Decimal               @db.Decimal(10, 2)
+  active       Boolean               @default(true)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  orders       Order[]
+
+  @@map("products")
+}
+
+model Order {
+  id           String        @id @default(cuid())
+  orderNo      String        @unique
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  productId    String
+  product      Product       @relation(fields: [productId], references: [id])
+  quantity     Int           @default(1)
+  amountCNY    Decimal       @db.Decimal(10, 2)
+  status       OrderStatus   @default(pending)
+  payChannel   PayChannel?
+  tradeNo      String?
+  paidAt       DateTime?
+  contactEmail String
+  contactNote  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  expiresAt    DateTime
+  fulfillment  Fulfillment?
+
+  @@index([userId])
+  @@index([status])
+  @@map("orders")
+}
+
+model Fulfillment {
+  id               String    @id @default(cuid())
+  orderId          String    @unique
+  order            Order     @relation(fields: [orderId], references: [id])
+  deliveredContent String
+  operatorId       String
+  operator         AdminUser @relation(fields: [operatorId], references: [id])
+  deliveredAt      DateTime  @default(now())
+
+  @@map("fulfillments")
+}
+
+model AdminUser {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  passwordHash String
+  role         AdminRole     @default(operator)
+  createdAt    DateTime      @default(now())
+  fulfillments Fulfillment[]
+  auditLogs    AuditLog[]
+
+  @@map("admin_users")
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  adminId    String
+  admin      AdminUser @relation(fields: [adminId], references: [id])
+  action     String
+  targetType String
+  targetId   String
+  createdAt  DateTime  @default(now())
+
+  @@index([adminId])
+  @@map("audit_logs")
+}
