@@ -5,6 +5,7 @@ import HowItWorks from "@/components/how-it-works";
 import ServiceNotes from "@/components/service-notes";
 import FAQ from "@/components/faq";
 import ApiPromoBanner from "@/components/api-promo-banner";
+import { SubscriptionProvider } from "@/components/subscription-context";
 
 export default async function HomePage() {
   const products = await prisma.product.findMany({
@@ -19,8 +20,10 @@ export default async function HomePage() {
 
   return (
     <main className="flex-1">
-      <Hero />
-      <SubscriptionPicker products={subscriptionProducts} />
+      <SubscriptionProvider>
+        <Hero />
+        <SubscriptionPicker products={subscriptionProducts} />
+      </SubscriptionProvider>
       <HowItWorks />
       <ServiceNotes />
       <FAQ />

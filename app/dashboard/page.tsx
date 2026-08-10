@@ -1,58 +1,81 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { orderStatusLabels, payChannelLabels } from "@/lib/labels";
+import { decrypt } from "@/lib/crypto";
+import { findUserOrders } from "@/lib/user-orders";
+import DashboardTabs from "@/components/dashboard/dashboard-tabs";
+import OrderCard from "@/components/dashboard/order-card";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/auth/login");
   }
 
-  const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
-    include: { product: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const { tab: rawTab } = await searchParams;
+  const tab = rawTab === "subscription" || rawTab === "api_credit" ? rawTab : "all";
+
+  const orders = await findUserOrders({ id: session.user.id, email: session.user.email });
+
+  const completedCount = orders.filter((o) => o.status === "completed").length;
+  const totalCreditUSD = orders
+    .filter((o) => o.status === "completed" && o.product.type === "api_credit")
+    .reduce((sum, o) => sum + Number(o.product.creditAmount ?? 0), 0);
+
+  const visibleOrders = orders.filter((o) => tab === "all" || o.product.type === tab);
 
   return (
-    <main className="flex-1 mx-auto w-full max-w-3xl px-6 py-12">
-      <h1 className="mb-6 text-2xl font-bold">我的订单</h1>
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <StatCard label="已完成订单数" value={String(completedCount)} />
+        <StatCard label="累计充值额度" value={`$${totalCreditUSD.toFixed(2)}`} />
+      </div>
 
-      {orders.length === 0 ? (
-        <p className="text-neutral-500">
-          暂无订单，去{" "}
-          <Link href="/" className="text-blue-600 hover:underline">
-            首页
-          </Link>{" "}
-          看看吧
-        </p>
-      ) : (
-        <div className="space-y-3">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/dashboard/orders/${order.orderNo}`}
-              className="block rounded-lg border border-neutral-200 bg-white p-4 hover:border-blue-400"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-medium">{order.product.name}</span>
-                <span className="text-sm text-neutral-500">
-                  {orderStatusLabels[order.status]}
-                </span>
-              </div>
-              <div className="mt-1 flex items-center justify-between text-sm text-neutral-500">
-                <span>{order.orderNo}</span>
-                <span>
-                  ${order.amountUSD.toString()} (¥{order.amountCNY.toString()})
-                  {order.payChannel ? ` · ${payChannelLabels[order.payChannel]}` : ""}
-                </span>
-              </div>
+      <DashboardTabs active={tab} />
+
+      {visibleOrders.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-white p-10 text-center dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-neutral-500 dark:text-neutral-400">暂无订单</p>
+          <div className="mt-4 flex justify-center gap-3 text-sm font-medium">
+            <Link href="/" className="text-brand-700 hover:underline dark:text-brand-100">
+              浏览订阅套餐
             </Link>
+            <Link
+              href="/api-platform"
+              className="text-brand-700 hover:underline dark:text-brand-100"
+            >
+              浏览 API 平台
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {visibleOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              deliveredContent={
+                order.fulfillment ? decrypt(order.fulfillment.deliveredContent) : null
+              }
+            />
           ))}
         </div>
       )}
-    </main>
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
+        {value}
+      </p>
+    </div>
   );
 }

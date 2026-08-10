@@ -1,6 +1,14 @@
+"use client";
+
 import { Zap } from "lucide-react";
+import { PRICE_TABLE } from "@/lib/pricing";
+import { durationLabels, planLabels } from "@/lib/labels";
+import { useSubscriptionSelection } from "@/components/subscription-context";
 
 export default function Hero() {
+  const { plan, duration } = useSubscriptionSelection();
+  const price = PRICE_TABLE[plan][duration];
+
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 sm:grid-cols-2 sm:items-center">
       <div>
@@ -17,8 +25,10 @@ export default function Hero() {
             <Zap size={20} fill="currentColor" />
           </div>
           <p className="mt-6 text-sm text-white/80">当前套餐</p>
-          <p className="mt-1 text-2xl font-bold">1 个月 Claude Pro</p>
-          <p className="mt-4 text-3xl font-bold">$25.00</p>
+          <p className="mt-1 text-2xl font-bold">
+            {durationLabels[duration]} {planLabels[plan]}
+          </p>
+          <p className="mt-4 text-3xl font-bold">${price.total.toFixed(2)}</p>
         </div>
       </div>
     </section>

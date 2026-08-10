@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 const FAQS = [
   {
     q: "这是一项什么服务？",
@@ -26,6 +30,8 @@ const FAQS = [
 ];
 
 export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16">
       <div className="mb-10 text-center">
@@ -33,15 +39,25 @@ export default function FAQ() {
         <p className="mt-2 text-neutral-500 dark:text-neutral-400">购买前你需要了解的一切。</p>
       </div>
       <div className="divide-y divide-neutral-200 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
-        {FAQS.map((item) => (
-          <details key={item.q} className="group px-6 py-4 [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex cursor-pointer items-center justify-between text-sm font-medium">
-              {item.q}
-              <span className="ml-4 text-neutral-400 transition group-open:rotate-45">+</span>
-            </summary>
-            <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">{item.a}</p>
-          </details>
-        ))}
+        {FAQS.map((item, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div
+              key={item.q}
+              className="px-6 py-4"
+              onMouseEnter={() => setOpenIndex(index)}
+              onMouseLeave={() => setOpenIndex((current) => (current === index ? null : current))}
+            >
+              <div className="flex cursor-default items-center justify-between text-sm font-medium">
+                {item.q}
+                <span className={`ml-4 text-neutral-400 transition ${isOpen ? "rotate-45" : ""}`}>+</span>
+              </div>
+              {isOpen && (
+                <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">{item.a}</p>
+              )}
+            </div>
+          );
+        })}
       </div>
     </section>
   );

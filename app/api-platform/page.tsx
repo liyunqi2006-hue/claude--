@@ -1,15 +1,32 @@
-import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import ApiHero from "@/components/api-hero";
+import ApiCreditTiers from "@/components/api-credit-tiers";
+import ApiHowItWorks from "@/components/api-how-it-works";
+import ApiFeatures from "@/components/api-features";
+import ApiFAQ from "@/components/api-faq";
 
-export default function ApiPlatformComingSoonPage() {
+export default async function ApiPlatformPage() {
+  const products = await prisma.product.findMany({
+    where: { active: true, type: "api_credit" },
+    orderBy: { priceUSD: "asc" },
+  });
+
+  const tiers = products
+    .filter((p) => p.creditAmount !== null)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      creditAmount: Number(p.creditAmount),
+      priceUSD: Number(p.priceUSD),
+    }));
+
   return (
-    <main className="flex-1 mx-auto flex w-full max-w-lg flex-col items-center px-6 py-24 text-center">
-      <h1 className="mb-3 text-2xl font-bold">API 平台即将上线</h1>
-      <p className="mb-8 text-neutral-500 dark:text-neutral-400">
-        按量付费的 Claude API 中转服务正在建设中，敬请期待。
-      </p>
-      <Link href="/" className="text-brand hover:underline">
-        返回首页
-      </Link>
+    <main className="flex-1">
+      <ApiHero />
+      <ApiCreditTiers tiers={tiers} />
+      <ApiHowItWorks />
+      <ApiFeatures />
+      <ApiFAQ />
     </main>
   );
 }
