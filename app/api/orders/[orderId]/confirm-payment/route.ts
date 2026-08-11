@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { sendPaymentSuccess } from "@/lib/email-service";
 
 export async function POST(
   req: Request,
@@ -31,6 +32,13 @@ export async function POST(
         paidAt: new Date(),
       },
     });
+
+    // 发送支付成功邮件
+    sendPaymentSuccess(
+      order.contactEmail,
+      order.orderNo,
+      "zh" // TODO: 根据用户语言设置
+    ).catch((err) => console.error("Failed to send payment success email:", err));
 
     return NextResponse.json({ success: true });
   } catch (error) {

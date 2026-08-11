@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { sendOrderConfirmation, sendAdminNotification } from "@/lib/email-service";
 
 const checkoutSchema = z.object({
   productId: z.string().min(1),
@@ -53,6 +54,23 @@ export async function POST(request: Request) {
       payChannel,
     },
   });
+
+  // 发送订单确认邮件（异步，不阻塞响应）
+  sendOrderConfirmation(
+    contactEmail,
+    orderNo,
+    product.name,
+    amountUSD.toFixed(2),
+    "zh" // TODO: 根据用户语言设置
+  ).catch((err) => console.error("Failed to send order confirmation email:", err));
+
+  // 发送管理员通知
+  sendAdminNotification(
+    orderNo,
+    product.name,
+    amountUSD.toFixed(2),
+    contactEmail
+  ).catch((err) => console.error("Failed to send admin notification:", err));
 
   // USDT 支付跳转到内部支付页面
   const paymentUrl = `/payment/${order.id}`;

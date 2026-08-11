@@ -7,10 +7,10 @@ import { HTML_LANG } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/zh";
 
 interface LookupOrder {
+  id: string;
   orderNo: string;
   productName: string;
-  amountUSD: string;
-  amountCNY: string;
+  totalUSD: string;
   contactEmail: string;
   status: string;
   createdAt: string;
@@ -47,7 +47,7 @@ function OrderCard({
       </div>
       <div className="mt-2 text-sm font-medium">{order.productName}</div>
       <div className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-        ${order.amountUSD} (¥{order.amountCNY}) · {maskEmail(order.contactEmail)}
+        ${order.totalUSD} · {maskEmail(order.contactEmail)}
       </div>
       <div className="mt-1 text-xs text-neutral-400">
         {dict.lookup.orderPlaced} {new Date(order.createdAt).toLocaleString(dateLocale)}
@@ -72,7 +72,9 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
   const router = useRouter();
   const { dict, locale } = useI18n();
   const dateLocale = HTML_LANG[locale];
+  const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
+  const [orderNo, setOrderNo] = useState("");
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const [sending, setSending] = useState(false);
@@ -81,32 +83,29 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
   const [results, setResults] = useState<LookupOrder[] | null>(null);
 
   async function resumePayment(orderNo: string) {
-    const res = await fetch(`/api/orders/${orderNo}/resume`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payChannel: "alipay" }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      router.push(`/pay/${orderNo}?url=${encodeURIComponent(data.paymentUrl)}`);
+    // 查找订单 ID
+    const order = results?.find(o => o.orderNo === orderNo) || recentOrders.find(o => o.orderNo === orderNo);
+    if (order?.id) {
+      router.push(`/payment/${order.id}`);
     }
   }
 
   async function requestCode() {
-    if (!email || cooldown > 0) return;
+    if (!email || !orderNo || cooldown > 0) return;
     setSending(true);
     setError(null);
     try {
-      const res = await fetch("/api/verification/send", {
+      const res = await fetch("/api/orders/send-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, purpose: "order_lookup" }),
+        body: JSON.stringify({ email, orderNo }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? dict.lookup.codeSendFailed);
+        setError(data.error ?? "发送验证码失败，请检查邮箱和订单号");
         return;
       }
+      setStep("code");
       setCooldown(60);
       const timer = setInterval(() => {
         setCooldown((c) => {
@@ -174,41 +173,79 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
           {dict.lookup.byEmailNote}
         </p>
         <form onSubmit={handleLookup} className="space-y-3">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={dict.lookup.emailPlaceholder}
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
-          />
-          <div className="flex gap-2">
-            <input
-              type="text"
-              required
-              inputMode="numeric"
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder={dict.lookup.codePlaceholder}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
-            />
-            <button
-              type="button"
-              onClick={requestCode}
-              disabled={!email || cooldown > 0 || sending}
-              className="shrink-0 rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
-            >
-              {cooldown > 0 ? `${cooldown}s` : dict.lookup.getCode}
-            </button>
-          </div>
-          <button
-            type="submit"
-            disabled={querying}
-            className="w-full rounded-lg bg-brand-700 py-2.5 font-medium text-white transition hover:bg-brand-600 disabled:opacity-50"
-          >
-            {querying ? dict.lookup.querying : dict.lookup.query}
-          </button>
+          {step === "email" ? (
+            <>
+              <input
+                type="text"
+                required
+                value={orderNo}
+                onChange={(e) => setOrderNo(e.target.value.toUpperCase())}
+                placeholder="订单号 (例如: ORD123ABC)"
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
+              />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={dict.lookup.emailPlaceholder}
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
+              />
+              <button
+                type="button"
+                onClick={requestCode}
+                disabled={!email || !orderNo || sending}
+                className="w-full rounded-lg bg-brand-700 py-2.5 font-medium text-white transition hover:bg-brand-600 disabled:opacity-50"
+              >
+                {sending ? "发送中..." : "发送验证码"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="rounded-lg bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+                <p className="text-neutral-600 dark:text-neutral-400">验证码已发送至:</p>
+                <p className="font-medium">{email}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("email");
+                    setCode("");
+                    setError(null);
+                  }}
+                  className="mt-2 text-brand-600 hover:underline"
+                >
+                  修改邮箱
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  required
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder={dict.lookup.codePlaceholder}
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
+                />
+                <button
+                  type="button"
+                  onClick={requestCode}
+                  disabled={cooldown > 0 || sending}
+                  className="shrink-0 rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                >
+                  {cooldown > 0 ? `${cooldown}s` : "重新发送"}
+                </button>
+              </div>
+              <button
+                type="submit"
+                disabled={querying || !code}
+                className="w-full rounded-lg bg-brand-700 py-2.5 font-medium text-white transition hover:bg-brand-600 disabled:opacity-50"
+              >
+                {querying ? dict.lookup.querying : dict.lookup.query}
+              </button>
+            </>
+          )}
         </form>
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 

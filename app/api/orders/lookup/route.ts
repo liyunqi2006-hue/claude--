@@ -33,10 +33,10 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     orders: orders.map((order) => ({
+      id: order.id,
       orderNo: order.orderNo,
       productName: order.product.name,
-      amountUSD: order.amountUSD.toString(),
-      amountCNY: order.amountCNY.toString(),
+      totalUSD: order.totalUSD.toString(),
       contactEmail: order.contactEmail,
       status: order.status,
       createdAt: order.createdAt,

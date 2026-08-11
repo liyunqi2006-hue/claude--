@@ -15,12 +15,13 @@ DROP TYPE "PayChannel_old";
 
 COMMIT;
 
--- AlterTable: Update orders table structure
-ALTER TABLE "orders"
-  RENAME COLUMN "amountUSD" TO "totalUSD";
+-- AlterTable: Update orders table structure (separate ALTER statements)
+ALTER TABLE "orders" RENAME COLUMN "amountUSD" TO "totalUSD";
 
-ALTER TABLE "orders"
-  DROP COLUMN "amountCNY",
-  RENAME COLUMN "contactNote" TO "noteFromUser",
-  ADD COLUMN "activationLink" TEXT,
-  ADD COLUMN "apiKey" TEXT;
+ALTER TABLE "orders" DROP COLUMN "amountCNY";
+
+ALTER TABLE "orders" RENAME COLUMN "contactNote" TO "noteFromUser";
+
+ALTER TABLE "orders" ADD COLUMN "activationLink" TEXT;
+
+ALTER TABLE "orders" ADD COLUMN "apiKey" TEXT;

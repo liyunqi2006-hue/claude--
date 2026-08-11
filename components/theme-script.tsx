@@ -1,4 +1,4 @@
-const THEME_INIT_SCRIPT = `
+export const THEME_INIT_SCRIPT = `
 (function () {
   try {
     var stored = localStorage.getItem("theme");
@@ -9,8 +9,3 @@ const THEME_INIT_SCRIPT = `
   } catch (e) {}
 })();
 `;
-
-export function ThemeScript() {
-  // 返回纯字符串，由 layout 通过 dangerouslySetInnerHTML 注入
-  return THEME_INIT_SCRIPT;
-}
