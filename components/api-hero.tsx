@@ -7,17 +7,21 @@ export default async function ApiHero() {
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 sm:grid-cols-2 sm:items-center">
       <div className="sm:pl-16">
-        <Image
-          src="/claude-logo.png"
-          alt="Claude"
-          width={56}
-          height={56}
-          priority
-          className="mb-5 h-14 w-14 rounded-xl shadow-sm"
-        />
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{dict.apiHero.title}</h1>
-        <p className="mt-3 text-lg font-medium text-brand">{dict.apiHero.tagline}</p>
-        <p className="mt-4 max-w-md text-neutral-600 dark:text-neutral-300">
+        <div className="flex items-center gap-5">
+          <Image
+            src="/claude-logo.png"
+            alt="Claude"
+            width={80}
+            height={80}
+            priority
+            className="h-20 w-20 rounded-xl shadow-sm"
+          />
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{dict.apiHero.title}</h1>
+            <p className="mt-2 text-lg font-medium text-brand">{dict.apiHero.tagline}</p>
+          </div>
+        </div>
+        <p className="mt-6 max-w-md text-neutral-600 dark:text-neutral-300">
           {dict.apiHero.desc}
         </p>
       </div>
