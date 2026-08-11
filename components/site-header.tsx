@@ -25,7 +25,6 @@ export default async function SiteHeader() {
         <nav className="flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-300">
           <NavContextLink />
           <NavApiLink />
-          <LanguageToggle />
           <div className="ml-1 h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
           <ThemeToggle />
           {email ? (
