@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { format } from "@/lib/i18n/config";
 
-const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
+const CHANNELS = ["usdt"] as const;
 
 export default function CheckoutForm({
   productId,
@@ -25,7 +25,7 @@ export default function CheckoutForm({
   const [quantity, setQuantity] = useState(1);
   const [contactEmail, setContactEmail] = useState(defaultEmail);
   const [contactNote, setContactNote] = useState("");
-  const [payChannel, setPayChannel] = useState<typeof CHANNELS[number]>("alipay");
+  const [payChannel, setPayChannel] = useState<typeof CHANNELS[number]>("usdt");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

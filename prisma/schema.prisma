@@ -41,11 +41,7 @@ enum OrderStatus {
 }
 
 enum PayChannel {
-  alipay
-  wxpay
-  bank
-  applepay
-  link
+  usdt
 }
 
 enum AdminRole {
@@ -82,25 +78,26 @@ model Product {
 }
 
 model Order {
-  id           String        @id @default(cuid())
-  orderNo      String        @unique
-  userId       String?
-  user         User?         @relation(fields: [userId], references: [id])
-  productId    String
-  product      Product       @relation(fields: [productId], references: [id])
-  quantity     Int           @default(1)
-  amountUSD    Decimal       @db.Decimal(10, 2)
-  amountCNY    Decimal       @db.Decimal(10, 2)
-  status       OrderStatus   @default(pending)
-  payChannel   PayChannel?
-  tradeNo      String?
-  paidAt       DateTime?
-  contactEmail String
-  contactNote  String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  expiresAt    DateTime
-  fulfillment  Fulfillment?
+  id               String        @id @default(cuid())
+  orderNo          String        @unique
+  userId           String?
+  user             User?         @relation(fields: [userId], references: [id])
+  productId        String
+  product          Product       @relation(fields: [productId], references: [id])
+  quantity         Int           @default(1)
+  totalUSD         Decimal       @db.Decimal(10, 2)
+  status           OrderStatus   @default(pending)
+  payChannel       PayChannel?
+  tradeNo          String?
+  paidAt           DateTime?
+  contactEmail     String
+  noteFromUser     String?
+  activationLink   String?
+  apiKey           String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  expiresAt        DateTime
+  fulfillment      Fulfillment?
 
   @@index([userId])
   @@index([status])

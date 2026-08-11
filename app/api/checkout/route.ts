@@ -2,15 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { buildPaymentUrl, type EpayType } from "@/lib/epay";
-import { usdToCny } from "@/lib/exchange";
 
 const checkoutSchema = z.object({
   productId: z.string().min(1),
   quantity: z.number().int().min(1).max(10).default(1),
   contactEmail: z.string().email(),
   contactNote: z.string().max(2000).optional(),
-  payChannel: z.enum(["alipay", "wxpay", "bank", "applepay", "link"]),
+  payChannel: z.enum(["usdt"]),
 });
 
 function generateOrderNo(): string {
@@ -39,9 +37,8 @@ export async function POST(request: Request) {
   }
 
   const amountUSD = Number(product.priceUSD) * quantity;
-  const amountCNY = usdToCny(amountUSD);
   const orderNo = generateOrderNo();
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // USDT 支付 1 小时超时
 
   const order = await prisma.order.create({
     data: {
@@ -49,20 +46,16 @@ export async function POST(request: Request) {
       userId: session?.user?.id,
       productId: product.id,
       quantity,
-      amountUSD,
-      amountCNY,
+      totalUSD: amountUSD,
       contactEmail,
-      contactNote,
+      noteFromUser: contactNote,
       expiresAt,
+      payChannel,
     },
   });
 
-  const paymentUrl = buildPaymentUrl({
-    outTradeNo: order.orderNo,
-    name: product.name,
-    money: amountCNY.toFixed(2),
-    type: payChannel as EpayType,
-  });
+  // USDT 支付跳转到内部支付页面
+  const paymentUrl = `/payment/${order.id}`;
 
   const response = NextResponse.json({ orderNo: order.orderNo, paymentUrl });
 

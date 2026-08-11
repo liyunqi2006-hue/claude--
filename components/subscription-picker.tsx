@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { format } from "@/lib/i18n/config";
 import { useSubscriptionSelection } from "@/components/subscription-context";
 
-const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
+const CHANNELS = ["usdt"] as const;
 
 export interface ProductLookup {
   id: string;
@@ -23,7 +23,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
   const [email, setEmail] = useState("");
   const [confirmedEmail, setConfirmedEmail] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(false);
-  const [payChannel, setPayChannel] = useState<typeof CHANNELS[number]>("alipay");
+  const [payChannel, setPayChannel] = useState<typeof CHANNELS[number]>("usdt");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
