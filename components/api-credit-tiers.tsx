@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Zap } from "lucide-react";
 import { usdToCny } from "@/lib/exchange";
 import { getDictionary } from "@/lib/i18n/server";
+import { format } from "@/lib/i18n/config";
 
 export interface CreditTier {
   id: string;
@@ -40,7 +41,7 @@ export default async function ApiCreditTiers({ tiers }: { tiers: CreditTier[] })
                 <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                   ≈ ¥{usdToCny(tier.priceUSD).toFixed(2)}
                 </div>
-                <div className="mt-1 text-xs text-brand">{dict.apiTiers.serviceFee(markupPercent)}</div>
+                <div className="mt-1 text-xs text-brand">{format(dict.apiTiers.serviceFee, { percent: markupPercent })}</div>
               </div>
               <Link
                 href={`/checkout/${tier.id}`}

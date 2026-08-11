@@ -11,5 +11,6 @@ const THEME_INIT_SCRIPT = `
 `;
 
 export function ThemeScript() {
-  return <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />;
+  // 返回纯字符串，由 layout 通过 dangerouslySetInnerHTML 注入
+  return THEME_INIT_SCRIPT;
 }

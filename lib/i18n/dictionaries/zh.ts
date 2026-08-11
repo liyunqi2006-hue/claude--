@@ -44,8 +44,7 @@ export const zh = {
     agreeTerms:
       "我已知悉本站仅提供软件订阅的纯代付服务，并非储值卡售卖。我同意服务条款与退款政策，并明确知悉：官方激活链接一经发送即严格不支持退款，且本平台不对任何第三方账号封禁风险负责。",
     payMethod: "支付方式",
-    breakdown: (official: string, service: string) =>
-      `= $${official} (官方订阅费) + $${service} (服务费)`,
+    breakdown: "= {official} (官方订阅费) + {service} (服务费)",
     planUnavailable: "该套餐暂未上架，请联系客服",
   },
   howItWorks: {
@@ -178,7 +177,7 @@ export const zh = {
     title: "选择充值档位",
     subtitle: "按额度充值，一次到账，用多少扣多少。",
     credit: "额度",
-    serviceFee: (percent: number) => `+${percent}% 服务费`,
+    serviceFee: "+{percent}% 服务费",
     buyNow: "立即购买",
   },
   apiPromo: {
@@ -253,16 +252,16 @@ export const zh = {
     processing: "订单处理中，完成后将通过邮件通知您，也可以刷新此页面查看。",
   },
   checkout: {
-    subscriptionTitle: (plan: string, duration: string) => `Claude ${plan} · ${duration}`,
-    apiTitle: (credit: string) => `API 余额充值 · 额度 $${credit}`,
-    unitPrice: (price: string) => `单价 $${price}`,
+    subscriptionTitle: "Claude {plan} · {duration}",
+    apiTitle: "API 余额充值 · 额度 ${credit}",
+    unitPrice: "单价 ${price}",
     quantity: "数量",
     contactEmail: "联系邮箱（用于接收发货通知）",
     subscriptionNote: "Claude 账号邮箱 / 备注（用于开通订阅）",
     optionalNote: "备注（可选）",
     subscriptionPlaceholder: "请填写需要开通订阅的 Claude 账号邮箱",
     payMethod: "支付方式",
-    total: (usd: string) => `合计 $${usd}`,
+    total: "合计 ${usd}",
     pay: "去支付",
   },
   lookup: {
@@ -284,7 +283,7 @@ export const zh = {
     queryFailed: "查询失败",
   },
   pay: {
-    orderCreated: (orderNo: string) => `订单 ${orderNo} 已创建`,
+    orderCreated: "订单 {orderNo} 已创建",
     redirectHint: "请点击下方按钮跳转至支付页面完成付款",
     goToPay: "前往支付",
     noUrl: "未获取到支付链接，请返回重新下单",

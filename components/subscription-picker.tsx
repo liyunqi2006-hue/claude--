@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { SubscriptionDuration, SubscriptionPlan } from "@prisma/client";
 import { DURATIONS, PLANS, PRICE_TABLE } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n/context";
+import { format } from "@/lib/i18n/config";
 import { useSubscriptionSelection } from "@/components/subscription-context";
 
 const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
@@ -163,7 +164,10 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
           <div>
             <div className="text-4xl font-bold">${price.total.toFixed(2)}</div>
             <div className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              {dict.subscription.breakdown(price.official.toFixed(2), price.service.toFixed(2))}
+              {format(dict.subscription.breakdown, {
+                official: price.official.toFixed(2),
+                service: price.service.toFixed(2),
+              })}
             </div>
           </div>
           <button

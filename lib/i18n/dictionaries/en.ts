@@ -45,8 +45,7 @@ export const en: Dictionary = {
     agreeTerms:
       "I understand this site provides a pure proxy-payment service for software subscriptions, not the sale of prepaid cards. I agree to the Terms of Service and Refund Policy, and acknowledge that: once the official activation link is sent, refunds are strictly not supported, and this platform is not responsible for any third-party account ban risk.",
     payMethod: "Payment Method",
-    breakdown: (official: string, service: string) =>
-      `= $${official} (official fee) + $${service} (service fee)`,
+    breakdown: "= {official} (official fee) + {service} (service fee)",
     planUnavailable: "This plan is currently unavailable, please contact support",
   },
   howItWorks: {
@@ -179,7 +178,7 @@ export const en: Dictionary = {
     title: "Choose a Top-Up Tier",
     subtitle: "Top up by credit amount, arrives at once, billed as you use it.",
     credit: "Credit",
-    serviceFee: (percent: number) => `+${percent}% service fee`,
+    serviceFee: "+{percent}% service fee",
     buyNow: "Buy Now",
   },
   apiPromo: {
@@ -255,16 +254,16 @@ export const en: Dictionary = {
       "Your order is being processed. We'll notify you by email when it's done — you can also refresh this page to check.",
   },
   checkout: {
-    subscriptionTitle: (plan: string, duration: string) => `Claude ${plan} · ${duration}`,
-    apiTitle: (credit: string) => `API Credit Top-Up · $${credit} credit`,
-    unitPrice: (price: string) => `Unit price $${price}`,
+    subscriptionTitle: "Claude {plan} · {duration}",
+    apiTitle: "API Credit Top-Up · ${credit} credit",
+    unitPrice: "Unit price ${price}",
     quantity: "Quantity",
     contactEmail: "Contact Email (for delivery notifications)",
     subscriptionNote: "Claude Account Email / Note (for activating the subscription)",
     optionalNote: "Note (optional)",
     subscriptionPlaceholder: "Enter the Claude account email that needs the subscription",
     payMethod: "Payment Method",
-    total: (usd: string) => `Total $${usd}`,
+    total: "Total ${usd}",
     pay: "Pay",
   },
   lookup: {
@@ -287,7 +286,7 @@ export const en: Dictionary = {
     queryFailed: "Query failed",
   },
   pay: {
-    orderCreated: (orderNo: string) => `Order ${orderNo} created`,
+    orderCreated: "Order {orderNo} created",
     redirectHint: "Please click the button below to go to the payment page and complete payment",
     goToPay: "Go to Payment",
     noUrl: "No payment link was obtained, please go back and re-order",

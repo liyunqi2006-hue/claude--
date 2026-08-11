@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        <ThemeScript />
+        <script dangerouslySetInnerHTML={{ __html: ThemeScript() }} />
       </head>
       <body className="min-h-full flex flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
         <I18nProvider locale={locale} dict={dict}>

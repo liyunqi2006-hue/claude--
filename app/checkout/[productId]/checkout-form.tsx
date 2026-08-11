@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { format } from "@/lib/i18n/config";
 
 const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
 
@@ -114,7 +115,7 @@ export default function CheckoutForm({
 
       <div className="flex items-center justify-between border-t border-neutral-200 pt-4">
         <span className="text-lg font-semibold">
-          {dict.checkout.total(totalUSD)}
+          {format(dict.checkout.total, { usd: totalUSD })}
           <span className="ml-2 text-sm font-normal text-neutral-500">≈ ¥{totalCNY}</span>
         </span>
         <button

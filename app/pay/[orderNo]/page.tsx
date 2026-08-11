@@ -1,4 +1,5 @@
 import { getDictionary } from "@/lib/i18n/server";
+import { format } from "@/lib/i18n/config";
 
 export default async function PayRedirectPage({
   params,
@@ -13,7 +14,7 @@ export default async function PayRedirectPage({
 
   return (
     <main className="flex-1 mx-auto w-full max-w-lg px-6 py-12 text-center">
-      <h1 className="mb-4 text-xl font-bold">{dict.pay.orderCreated(orderNo)}</h1>
+      <h1 className="mb-4 text-xl font-bold">{format(dict.pay.orderCreated, { orderNo })}</h1>
       <p className="mb-6 text-neutral-600">{dict.pay.redirectHint}</p>
       {url ? (
         <a

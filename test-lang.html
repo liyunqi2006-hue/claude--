@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Language Toggle</title></head>
+<body>
+<h1>Language Toggle Test</h1>
+<p>Current cookies: <span id="cookies"></span></p>
+<button onclick="setCookie('locale', 'zh')">Set ZH</button>
+<button onclick="setCookie('locale', 'en')">Set EN</button>
+<button onclick="location.reload()">Reload</button>
+<script>
+function setCookie(name, value) {
+  document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+  document.getElementById('cookies').innerText = document.cookie;
+}
+document.getElementById('cookies').innerText = document.cookie;
+</script>
+</body>
+</html>
