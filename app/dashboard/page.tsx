@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { decrypt } from "@/lib/crypto";
 import { findUserOrders } from "@/lib/user-orders";
+import { getDictionary } from "@/lib/i18n/server";
 import DashboardTabs from "@/components/dashboard/dashboard-tabs";
 import OrderCard from "@/components/dashboard/order-card";
 
@@ -13,12 +14,13 @@ export default async function DashboardPage({
 }) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/auth/login");
+    redirect("/");
   }
 
   const { tab: rawTab } = await searchParams;
   const tab = rawTab === "subscription" || rawTab === "api_credit" ? rawTab : "all";
 
+  const dict = await getDictionary();
   const orders = await findUserOrders({ id: session.user.id, email: session.user.email });
 
   const completedCount = orders.filter((o) => o.status === "completed").length;
@@ -31,24 +33,24 @@ export default async function DashboardPage({
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <StatCard label="已完成订单数" value={String(completedCount)} />
-        <StatCard label="累计充值额度" value={`$${totalCreditUSD.toFixed(2)}`} />
+        <StatCard label={dict.dashboard.completedOrders} value={String(completedCount)} />
+        <StatCard label={dict.dashboard.totalCredit} value={`$${totalCreditUSD.toFixed(2)}`} />
       </div>
 
       <DashboardTabs active={tab} />
 
       {visibleOrders.length === 0 ? (
         <div className="rounded-2xl border border-neutral-200 bg-white p-10 text-center dark:border-neutral-800 dark:bg-neutral-900">
-          <p className="text-neutral-500 dark:text-neutral-400">暂无订单</p>
+          <p className="text-neutral-500 dark:text-neutral-400">{dict.dashboard.empty}</p>
           <div className="mt-4 flex justify-center gap-3 text-sm font-medium">
             <Link href="/" className="text-brand-700 hover:underline dark:text-brand-100">
-              浏览订阅套餐
+              {dict.dashboard.browseSubscription}
             </Link>
             <Link
               href="/api-platform"
               className="text-brand-700 hover:underline dark:text-brand-100"
             >
-              浏览 API 平台
+              {dict.dashboard.browseApi}
             </Link>
           </div>
         </div>

@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SubscriptionDuration, SubscriptionPlan } from "@prisma/client";
-import { DURATIONS, PLANS, PRICE_TABLE, planDescriptions } from "@/lib/pricing";
-import { durationLabels, payChannelLabels, planLabels } from "@/lib/labels";
+import { DURATIONS, PLANS, PRICE_TABLE } from "@/lib/pricing";
+import { useI18n } from "@/lib/i18n/context";
 import { useSubscriptionSelection } from "@/components/subscription-context";
 
 const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
@@ -17,6 +17,7 @@ export interface ProductLookup {
 
 export default function SubscriptionPicker({ products }: { products: ProductLookup[] }) {
   const router = useRouter();
+  const { dict } = useI18n();
   const { plan, setPlan, duration, setDuration } = useSubscriptionSelection();
   const [email, setEmail] = useState("");
   const [confirmedEmail, setConfirmedEmail] = useState(false);
@@ -35,7 +36,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
 
   async function handleSubmit() {
     if (!product) {
-      setError("该套餐暂未上架，请联系客服");
+      setError(dict.subscription.planUnavailable);
       return;
     }
     setLoading(true);
@@ -53,13 +54,13 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "下单失败");
+        setError(data.error ?? dict.common.orderFailed);
         setLoading(false);
         return;
       }
       router.push(`/pay/${data.orderNo}?url=${encodeURIComponent(data.paymentUrl)}`);
     } catch {
-      setError("网络错误，请稍后重试");
+      setError(dict.common.networkError);
       setLoading(false);
     }
   }
@@ -79,8 +80,8 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
                   : "border-neutral-200 text-neutral-600 hover:border-neutral-300 dark:border-neutral-700 dark:text-neutral-300"
               }`}
             >
-              <div className="text-lg font-semibold">{planLabels[p]}</div>
-              <div className="mt-1 text-sm text-neutral-400">{planDescriptions[p]}</div>
+              <div className="text-lg font-semibold">{dict.enums.plan[p]}</div>
+              <div className="mt-1 text-sm text-neutral-400">{dict.enums.planDescription[p]}</div>
             </button>
           ))}
         </div>
@@ -97,23 +98,23 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
               }`}
             >
-              {durationLabels[d]}
+              {dict.enums.duration[d]}
             </button>
           ))}
         </div>
 
         <div className="mb-6">
-          <label className="mb-2 block text-base font-medium">接收邮箱</label>
+          <label className="mb-2 block text-base font-medium">{dict.subscription.receiveEmail}</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="填写接收订阅链接的邮箱"
+            placeholder={dict.subscription.emailPlaceholder}
             className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-base dark:border-neutral-700 dark:bg-neutral-950"
           />
           <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            支付成功后，我们将为您代付官方订单，该邮箱将直接收到来自 Anthropic 官方直发的订阅激活链接。
+            {dict.subscription.emailNote}
           </p>
           <label className="mt-3 flex items-start gap-2 text-base">
             <input
@@ -122,7 +123,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
               onChange={(e) => setConfirmedEmail(e.target.checked)}
               className="mt-1 h-4 w-4"
             />
-            <span>我已仔细核对接收邮箱，并知悉此邮箱提交后不可更改，已谨慎填写。</span>
+            <span>{dict.subscription.confirmEmail}</span>
           </label>
         </div>
 
@@ -134,14 +135,12 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
               onChange={(e) => setAgreedTerms(e.target.checked)}
               className="mt-1 h-4 w-4"
             />
-            <span>
-              我已知悉本站仅提供软件订阅的纯代付服务，并非储值卡售卖。我同意服务条款与退款政策，并明确知悉：官方激活链接一经发送即严格不支持退款，且本平台不对任何第三方账号封禁风险负责。
-            </span>
+            <span>{dict.subscription.agreeTerms}</span>
           </label>
         </div>
 
         <div className="mb-8">
-          <label className="mb-3 block text-base font-medium">支付方式</label>
+          <label className="mb-3 block text-base font-medium">{dict.subscription.payMethod}</label>
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
             {CHANNELS.map((c) => (
               <button
@@ -154,7 +153,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
                     : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-300"
                 }`}
               >
-                {payChannelLabels[c]}
+                {dict.enums.payChannel[c]}
               </button>
             ))}
           </div>
@@ -164,7 +163,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
           <div>
             <div className="text-4xl font-bold">${price.total.toFixed(2)}</div>
             <div className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              = ${price.official.toFixed(2)} (官方订阅费) + ${price.service.toFixed(2)} (服务费)
+              {dict.subscription.breakdown(price.official.toFixed(2), price.service.toFixed(2))}
             </div>
           </div>
           <button
@@ -173,7 +172,7 @@ export default function SubscriptionPicker({ products }: { products: ProductLook
             disabled={!canSubmit}
             className="w-full rounded-xl bg-brand-700 px-10 py-4 text-lg font-medium text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
-            {loading ? "提交中..." : "立即购买"}
+            {loading ? dict.common.submitting : dict.common.buyNow}
           </button>
         </div>
 

@@ -7,10 +7,14 @@ export default function FulfillmentBlock({
   title,
   content,
   hint,
+  copyLabel,
+  copiedLabel,
 }: {
   title: string;
   content: string;
   hint?: string;
+  copyLabel: string;
+  copiedLabel: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -33,11 +37,11 @@ export default function FulfillmentBlock({
         >
           {copied ? (
             <>
-              <Check size={14} /> 已复制
+              <Check size={14} /> {copiedLabel}
             </>
           ) : (
             <>
-              <Copy size={14} /> 复制
+              <Copy size={14} /> {copyLabel}
             </>
           )}
         </button>

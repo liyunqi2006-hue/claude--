@@ -1,3 +1,5 @@
+import { getDictionary } from "@/lib/i18n/server";
+
 export default async function PayRedirectPage({
   params,
   searchParams,
@@ -7,20 +9,21 @@ export default async function PayRedirectPage({
 }) {
   const { orderNo } = await params;
   const { url } = await searchParams;
+  const dict = await getDictionary();
 
   return (
     <main className="flex-1 mx-auto w-full max-w-lg px-6 py-12 text-center">
-      <h1 className="mb-4 text-xl font-bold">订单 {orderNo} 已创建</h1>
-      <p className="mb-6 text-neutral-600">请点击下方按钮跳转至支付页面完成付款</p>
+      <h1 className="mb-4 text-xl font-bold">{dict.pay.orderCreated(orderNo)}</h1>
+      <p className="mb-6 text-neutral-600">{dict.pay.redirectHint}</p>
       {url ? (
         <a
           href={url}
           className="inline-block rounded bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
         >
-          前往支付
+          {dict.pay.goToPay}
         </a>
       ) : (
-        <p className="text-red-600">未获取到支付链接，请返回重新下单</p>
+        <p className="text-red-600">{dict.pay.noUrl}</p>
       )}
     </main>
   );

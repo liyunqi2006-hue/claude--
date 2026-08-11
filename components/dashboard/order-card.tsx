@@ -3,17 +3,18 @@ import { Cpu, Zap } from "lucide-react";
 import type { Order, Product } from "@prisma/client";
 import StatusBadge from "@/components/dashboard/status-badge";
 import FulfillmentBlock from "@/components/dashboard/fulfillment-block";
-import { payChannelLabels } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
 
 type OrderWithProduct = Order & { product: Product };
 
-export default function OrderCard({
+export default async function OrderCard({
   order,
   deliveredContent,
 }: {
   order: OrderWithProduct;
   deliveredContent: string | null;
 }) {
+  const dict = await getDictionary();
   const isApiCredit = order.product.type === "api_credit";
   const Icon = isApiCredit ? Cpu : Zap;
 
@@ -30,7 +31,7 @@ export default function OrderCard({
             </p>
             {isApiCredit && order.product.creditAmount !== null && (
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                ${order.product.creditAmount.toString()} 额度
+                ${order.product.creditAmount.toString()} {dict.dashboard.creditSuffix}
               </p>
             )}
           </div>
@@ -47,14 +48,16 @@ export default function OrderCard({
         </Link>
         <span>
           ${order.amountUSD.toString()} (¥{order.amountCNY.toString()})
-          {order.payChannel ? ` · ${payChannelLabels[order.payChannel]}` : ""}
+          {order.payChannel ? ` · ${dict.enums.payChannel[order.payChannel]}` : ""}
         </span>
       </div>
 
       {deliveredContent && (
         <FulfillmentBlock
-          title={isApiCredit ? "API Key" : "激活链接"}
+          title={isApiCredit ? dict.dashboard.apiKey : dict.dashboard.activationLink}
           content={deliveredContent}
+          copyLabel={dict.dashboard.copy}
+          copiedLabel={dict.dashboard.copied}
           hint={isApiCredit ? "Base URL: https://api.example.com" : undefined}
         />
       )}

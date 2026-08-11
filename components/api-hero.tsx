@@ -1,13 +1,24 @@
+import Image from "next/image";
 import { Cpu } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/server";
 
-export default function ApiHero() {
+export default async function ApiHero() {
+  const dict = await getDictionary();
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 sm:grid-cols-2 sm:items-center">
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Claude API 平台</h1>
-        <p className="mt-3 text-lg font-medium text-brand">按量付费 · 稳定中转</p>
+      <div className="sm:pl-16">
+        <Image
+          src="/claude-logo.png"
+          alt="Claude"
+          width={56}
+          height={56}
+          priority
+          className="mb-5 h-14 w-14 rounded-xl shadow-sm"
+        />
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{dict.apiHero.title}</h1>
+        <p className="mt-3 text-lg font-medium text-brand">{dict.apiHero.tagline}</p>
         <p className="mt-4 max-w-md text-neutral-600 dark:text-neutral-300">
-          购买 API 额度，通过我们的中转平台直接调用 Claude 模型 —— 使用你自己的 API Key、自定义用量限制，按实际使用量付费。
+          {dict.apiHero.desc}
         </p>
       </div>
 
@@ -17,9 +28,9 @@ export default function ApiHero() {
             <Cpu size={20} />
           </div>
           <ul className="mt-6 space-y-2 text-sm">
-            <li>$50 起充，秒级到账</li>
-            <li>全系列模型覆盖</li>
-            <li>接口格式与官方一致</li>
+            <li>{dict.apiHero.bullet1}</li>
+            <li>{dict.apiHero.bullet2}</li>
+            <li>{dict.apiHero.bullet3}</li>
           </ul>
         </div>
       </div>

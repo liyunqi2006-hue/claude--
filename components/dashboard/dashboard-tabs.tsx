@@ -1,15 +1,17 @@
 import Link from "next/link";
+import { getDictionary } from "@/lib/i18n/server";
 
-const TABS: { key: string; label: string }[] = [
-  { key: "all", label: "所有订单" },
-  { key: "subscription", label: "订阅" },
-  { key: "api_credit", label: "API 额度" },
-];
+export default async function DashboardTabs({ active }: { active: string }) {
+  const dict = await getDictionary();
+  const tabs: { key: string; label: string }[] = [
+    { key: "all", label: dict.dashboard.tabs.all },
+    { key: "subscription", label: dict.dashboard.tabs.subscription },
+    { key: "api_credit", label: dict.dashboard.tabs.apiCredit },
+  ];
 
-export default function DashboardTabs({ active }: { active: string }) {
   return (
     <nav className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white p-1 text-sm font-medium dark:border-neutral-800 dark:bg-neutral-900">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const isActive = tab.key === active;
         return (
           <Link

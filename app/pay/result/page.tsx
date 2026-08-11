@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { orderStatusLabels } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function PayResultPage({
   searchParams,
@@ -11,22 +11,23 @@ export default async function PayResultPage({
   const order = orderNo
     ? await prisma.order.findUnique({ where: { orderNo } })
     : null;
+  const dict = await getDictionary();
 
   return (
     <main className="flex-1 mx-auto w-full max-w-lg px-6 py-12 text-center">
-      <h1 className="mb-4 text-xl font-bold">支付结果</h1>
+      <h1 className="mb-4 text-xl font-bold">{dict.pay.resultTitle}</h1>
       {order ? (
         <>
-          <p className="mb-2 text-neutral-600">订单号：{order.orderNo}</p>
+          <p className="mb-2 text-neutral-600">{dict.pay.orderNoLabel}{order.orderNo}</p>
           <p className="mb-6 text-lg font-medium">
-            当前状态：{orderStatusLabels[order.status]}
+            {dict.pay.currentStatus}{dict.enums.orderStatus[order.status]}
           </p>
         </>
       ) : (
-        <p className="mb-6 text-neutral-600">未找到订单信息，支付状态请以实际扣款为准</p>
+        <p className="mb-6 text-neutral-600">{dict.pay.resultNotFound}</p>
       )}
       <Link href="/dashboard" className="text-blue-600 hover:underline">
-        查看我的订单
+        {dict.pay.viewOrders}
       </Link>
     </main>
   );

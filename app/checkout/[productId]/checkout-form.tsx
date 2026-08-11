@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { payChannelLabels } from "@/lib/labels";
+import { useI18n } from "@/lib/i18n/context";
 
 const CHANNELS = ["alipay", "wxpay", "bank", "applepay", "link"] as const;
 
@@ -20,6 +20,7 @@ export default function CheckoutForm({
   isSubscription: boolean;
 }) {
   const router = useRouter();
+  const { dict } = useI18n();
   const [quantity, setQuantity] = useState(1);
   const [contactEmail, setContactEmail] = useState(defaultEmail);
   const [contactNote, setContactNote] = useState("");
@@ -42,13 +43,13 @@ export default function CheckoutForm({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "下单失败");
+        setError(data.error ?? dict.common.orderFailed);
         setLoading(false);
         return;
       }
       router.push(`/pay/${data.orderNo}?url=${encodeURIComponent(data.paymentUrl)}`);
     } catch {
-      setError("网络错误，请稍后重试");
+      setError(dict.common.networkError);
       setLoading(false);
     }
   }
@@ -56,7 +57,7 @@ export default function CheckoutForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="mb-1 block text-sm font-medium">数量</label>
+        <label className="mb-1 block text-sm font-medium">{dict.checkout.quantity}</label>
         <input
           type="number"
           min={1}
@@ -68,7 +69,7 @@ export default function CheckoutForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">联系邮箱（用于接收发货通知）</label>
+        <label className="mb-1 block text-sm font-medium">{dict.checkout.contactEmail}</label>
         <input
           type="email"
           required
@@ -80,19 +81,19 @@ export default function CheckoutForm({
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          {isSubscription ? "Claude 账号邮箱 / 备注（用于开通订阅）" : "备注（可选）"}
+          {isSubscription ? dict.checkout.subscriptionNote : dict.checkout.optionalNote}
         </label>
         <textarea
           value={contactNote}
           onChange={(e) => setContactNote(e.target.value)}
           rows={3}
           className="w-full rounded border border-neutral-300 px-3 py-2"
-          placeholder={isSubscription ? "请填写需要开通订阅的 Claude 账号邮箱" : ""}
+          placeholder={isSubscription ? dict.checkout.subscriptionPlaceholder : ""}
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">支付方式</label>
+        <label className="mb-1 block text-sm font-medium">{dict.checkout.payMethod}</label>
         <div className="grid grid-cols-3 gap-2">
           {CHANNELS.map((c) => (
             <button
@@ -105,7 +106,7 @@ export default function CheckoutForm({
                   : "border-neutral-300"
               }`}
             >
-              {payChannelLabels[c]}
+              {dict.enums.payChannel[c]}
             </button>
           ))}
         </div>
@@ -113,7 +114,7 @@ export default function CheckoutForm({
 
       <div className="flex items-center justify-between border-t border-neutral-200 pt-4">
         <span className="text-lg font-semibold">
-          合计 ${totalUSD}
+          {dict.checkout.total(totalUSD)}
           <span className="ml-2 text-sm font-normal text-neutral-500">≈ ¥{totalCNY}</span>
         </span>
         <button
@@ -121,7 +122,7 @@ export default function CheckoutForm({
           disabled={loading}
           className="rounded bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? "提交中..." : "去支付"}
+          {loading ? dict.common.submitting : dict.checkout.pay}
         </button>
       </div>
 

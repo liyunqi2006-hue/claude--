@@ -3,7 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { decrypt } from "@/lib/crypto";
 import { findUserOrderByNo } from "@/lib/user-orders";
-import { orderStatusLabels, payChannelLabels } from "@/lib/labels";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { HTML_LANG } from "@/lib/i18n/config";
 import StatusBadge from "@/components/dashboard/status-badge";
 import FulfillmentBlock from "@/components/dashboard/fulfillment-block";
 
@@ -14,7 +15,7 @@ export default async function OrderDetailPage({
 }) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/auth/login");
+    redirect("/");
   }
 
   const { orderNo } = await params;
@@ -27,6 +28,8 @@ export default async function OrderDetailPage({
     notFound();
   }
 
+  const dict = await getDictionary();
+  const dateLocale = HTML_LANG[await getLocale()];
   const deliveredContent = order.fulfillment
     ? decrypt(order.fulfillment.deliveredContent)
     : null;
@@ -38,7 +41,7 @@ export default async function OrderDetailPage({
         href="/dashboard"
         className="text-sm font-medium text-brand-700 hover:underline dark:text-brand-100"
       >
-        ← 返回仪表盘
+        {dict.orderDetail.back}
       </Link>
 
       <div className="mt-4 rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
@@ -48,38 +51,40 @@ export default async function OrderDetailPage({
               {order.product.name}
             </h1>
             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              订单号 {order.orderNo}
+              {dict.orderDetail.orderNo} {order.orderNo}
             </p>
           </div>
           <StatusBadge status={order.status} />
         </div>
 
         <dl className="mt-6 space-y-2 text-sm">
-          <Row label="状态" value={orderStatusLabels[order.status]} />
+          <Row label={dict.orderDetail.status} value={dict.enums.orderStatus[order.status]} />
           <Row
-            label="金额"
+            label={dict.orderDetail.amount}
             value={`$${order.amountUSD.toString()} (¥${order.amountCNY.toString()})`}
           />
           {order.payChannel && (
-            <Row label="支付方式" value={payChannelLabels[order.payChannel]} />
+            <Row label={dict.orderDetail.payMethod} value={dict.enums.payChannel[order.payChannel]} />
           )}
-          <Row label="下单时间" value={order.createdAt.toLocaleString("zh-CN")} />
+          <Row label={dict.orderDetail.createdAt} value={order.createdAt.toLocaleString(dateLocale)} />
           {order.paidAt && (
-            <Row label="支付时间" value={order.paidAt.toLocaleString("zh-CN")} />
+            <Row label={dict.orderDetail.paidAt} value={order.paidAt.toLocaleString(dateLocale)} />
           )}
         </dl>
 
         {deliveredContent && (
           <FulfillmentBlock
-            title={isApiCredit ? "API Key" : "激活链接"}
+            title={isApiCredit ? dict.orderDetail.apiKey : dict.orderDetail.activationLink}
             content={deliveredContent}
+            copyLabel={dict.dashboard.copy}
+            copiedLabel={dict.dashboard.copied}
             hint={isApiCredit ? "Base URL: https://api.example.com" : undefined}
           />
         )}
 
         {!deliveredContent && order.status !== "pending" && (
           <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
-            订单处理中，完成后将通过邮件通知您，也可以刷新此页面查看。
+            {dict.orderDetail.processing}
           </p>
         )}
       </div>

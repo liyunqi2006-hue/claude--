@@ -5,7 +5,7 @@ import UserSummary from "@/components/dashboard/user-summary";
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/auth/login");
+    redirect("/");
   }
 
   return (

@@ -1,5 +1,5 @@
 import type { OrderStatus } from "@prisma/client";
-import { orderStatusLabels } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   pending: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
@@ -10,12 +10,13 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   cancelled: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300",
 };
 
-export default function StatusBadge({ status }: { status: OrderStatus }) {
+export default async function StatusBadge({ status }: { status: OrderStatus }) {
+  const dict = await getDictionary();
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[status]}`}
     >
-      {orderStatusLabels[status]}
+      {dict.enums.orderStatus[status]}
     </span>
   );
 }

@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import { ThemeScript } from "@/components/theme-script";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
+import { getLocale, dictionaryFor } from "@/lib/i18n/server";
+import { HTML_LANG } from "@/lib/i18n/config";
+import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,16 +18,25 @@ export const metadata: Metadata = {
   description: "Claude Pro / Max5x / Max20x 订阅代付与 API 余额充值",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
+  const dict = dictionaryFor(locale);
+
   return (
-    <html lang="zh-CN" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html
+      lang={HTML_LANG[locale]}
+      className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
         <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <I18nProvider locale={locale} dict={dict}>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </I18nProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import { usdToCny } from "@/lib/exchange";
+import { getDictionary } from "@/lib/i18n/server";
 
 export interface CreditTier {
   id: string;
@@ -9,14 +10,13 @@ export interface CreditTier {
   priceUSD: number;
 }
 
-export default function ApiCreditTiers({ tiers }: { tiers: CreditTier[] }) {
+export default async function ApiCreditTiers({ tiers }: { tiers: CreditTier[] }) {
+  const dict = await getDictionary();
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-16">
       <div className="mb-10 text-center">
-        <h2 className="text-2xl font-bold">选择充值档位</h2>
-        <p className="mt-2 text-neutral-500 dark:text-neutral-400">
-          按额度充值，一次到账，用多少扣多少。
-        </p>
+        <h2 className="text-2xl font-bold">{dict.apiTiers.title}</h2>
+        <p className="mt-2 text-neutral-500 dark:text-neutral-400">{dict.apiTiers.subtitle}</p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {tiers.map((tier) => {
@@ -32,19 +32,21 @@ export default function ApiCreditTiers({ tiers }: { tiers: CreditTier[] }) {
                 <Zap size={20} />
               </div>
               <div className="mt-4 text-3xl font-bold">${tier.creditAmount.toFixed(0)}</div>
-              <div className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">额度</div>
+              <div className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                {dict.apiTiers.credit}
+              </div>
               <div className="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
                 <div className="text-lg font-semibold">${tier.priceUSD.toFixed(2)}</div>
                 <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                   ≈ ¥{usdToCny(tier.priceUSD).toFixed(2)}
                 </div>
-                <div className="mt-1 text-xs text-brand">+{markupPercent}% 服务费</div>
+                <div className="mt-1 text-xs text-brand">{dict.apiTiers.serviceFee(markupPercent)}</div>
               </div>
               <Link
                 href={`/checkout/${tier.id}`}
                 className="mt-5 rounded-lg bg-brand-700 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-brand-600"
               >
-                立即购买
+                {dict.apiTiers.buyNow}
               </Link>
             </div>
           );
