@@ -1,13 +1,10 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getAdminSession } from "@/lib/admin-session";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminHomePage() {
   const session = await getAdminSession();
-  if (!session) {
-    redirect("/admin/login");
-  }
+  // 允许无登录访问（通过隐藏按键设置密码）
 
   // 获取统计数据
   const [
@@ -42,9 +39,11 @@ export default async function AdminHomePage() {
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">后台管理</h1>
-        <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-          欢迎回来，{session.username}
-        </p>
+        {session && (
+          <p className="mt-2 text-neutral-600 dark:text-neutral-400">
+            欢迎回来，{session.username}
+          </p>
+        )}
       </div>
 
       {/* 统计卡片 */}
