@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type ProductType = "subscription" | "api_credits";
+type ProductType = "subscription" | "api_credit";
 
 export default function FulfillmentForm({
   orderId,
@@ -19,7 +19,7 @@ export default function FulfillmentForm({
   const [loading, setLoading] = useState(false);
 
   const isSubscription = productType === "subscription";
-  const isApiCredits = productType === "api_credits";
+  const isApiCredits = productType === "api_credit";
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();

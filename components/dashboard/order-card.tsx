@@ -47,7 +47,7 @@ export default async function OrderCard({
           {order.orderNo}
         </Link>
         <span>
-          ${order.amountUSD.toString()} (¥{order.amountCNY.toString()})
+          ${order.totalUSD.toString()}
           {order.payChannel ? ` · ${dict.enums.payChannel[order.payChannel]}` : ""}
         </span>
       </div>

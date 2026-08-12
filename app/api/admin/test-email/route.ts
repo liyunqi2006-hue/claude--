@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   }
 
   const { to } = await request.json();
-  const testEmail = to || admin.email || "test@example.com";
+  const testEmail = to || "test@example.com";
 
   try {
     const success = await sendEmail({

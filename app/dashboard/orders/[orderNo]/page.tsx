@@ -61,7 +61,7 @@ export default async function OrderDetailPage({
           <Row label={dict.orderDetail.status} value={dict.enums.orderStatus[order.status]} />
           <Row
             label={dict.orderDetail.amount}
-            value={`$${order.amountUSD.toString()} (¥${order.amountCNY.toString()})`}
+            value={`$${order.totalUSD.toString()}`}
           />
           {order.payChannel && (
             <Row label={dict.orderDetail.payMethod} value={dict.enums.payChannel[order.payChannel]} />

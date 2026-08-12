@@ -106,7 +106,7 @@ export const en: Dictionary = {
       },
       {
         q: "Why choose this platform?",
-        a: "We support common domestic payment methods like Alipay, WeChat Pay, and bank cards — no credit card or foreign-currency account needed. Pricing is transparent with official fees and service fees shown separately, and activation is completed in as little as 1 hour after payment.",
+        a: "We support USDT (TRC20) crypto payments — no credit card or foreign-currency account needed. Pricing is transparent with official fees and service fees shown separately, and activation is completed in as little as 1 hour after payment.",
       },
       {
         q: "Why should I trust you?",
@@ -114,7 +114,7 @@ export const en: Dictionary = {
       },
       {
         q: "How do I pay?",
-        a: "After selecting a plan in the plan picker, click 'Buy Now' to jump to the corresponding Alipay / WeChat / bank card checkout. Once payment succeeds, the system automatically handles the rest of the proxy-payment process.",
+        a: "After selecting a plan in the plan picker, click 'Buy Now' to jump to the USDT (TRC20) payment page and transfer the corresponding amount to the designated wallet address. Once payment succeeds, the system automatically handles the rest of the proxy-payment process.",
       },
       {
         q: "How do I check my order status?",

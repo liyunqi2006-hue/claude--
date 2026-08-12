@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/admin-session";
 import FulfillmentForm from "./fulfillment-form";
@@ -114,29 +113,6 @@ export default async function AdminOrderDetailPage({
           )}
         </div>
       </div>
-
-      {/* 支付凭证 */}
-      {order.paymentProof && (
-        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-          <h2 className="mb-4 text-lg font-semibold">支付凭证</h2>
-          <div className="relative h-64 w-full overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700">
-            <Image
-              src={order.paymentProof}
-              alt="支付凭证"
-              fill
-              className="object-contain"
-            />
-          </div>
-          <a
-            href={order.paymentProof}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-block text-sm text-blue-600 hover:underline dark:text-blue-400"
-          >
-            查看原图 →
-          </a>
-        </div>
-      )}
 
       {/* 发货信息 */}
       {(order.activationLink || order.apiKey) && (

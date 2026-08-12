@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { THEME_INIT_SCRIPT } from "@/components/theme-script";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
+import ThemeInitializer from "@/components/theme-initializer";
 import { getLocale, dictionaryFor } from "@/lib/i18n/server";
 import { HTML_LANG } from "@/lib/i18n/config";
 import { I18nProvider } from "@/lib/i18n/context";
@@ -28,13 +28,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
-          suppressHydrationWarning
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+        <ThemeInitializer />
         <I18nProvider locale={locale} dict={dict}>
           <SiteHeader />
           {children}

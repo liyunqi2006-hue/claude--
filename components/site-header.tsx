@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/server";
 import ThemeToggle from "./theme-toggle";
 import NavContextLink from "./nav-context-link";
+import NavContactLink from "./nav-contact-link";
 import LanguageToggle from "./language-toggle";
 
 export default async function SiteHeader() {
@@ -23,6 +24,7 @@ export default async function SiteHeader() {
 
         <nav className="flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-300">
           <NavContextLink />
+          <NavContactLink />
           <LanguageToggle />
           <div className="ml-1 h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
           <ThemeToggle />
