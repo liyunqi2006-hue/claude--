@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { sendContactMessage } from "@/lib/resend";
+import { sendContactMessage } from "@/lib/email-service";
 
 const schema = z.object({
   email: z.string().email(),

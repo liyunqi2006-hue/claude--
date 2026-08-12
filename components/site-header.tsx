@@ -1,16 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { Zap } from "lucide-react";
-import { auth } from "@/lib/auth";
-import { getDictionary } from "@/lib/i18n/server";
+import { useSession } from "next-auth/react";
 import ThemeToggle from "./theme-toggle";
 import NavContextLink from "./nav-context-link";
 import NavContactLink from "./nav-contact-link";
 import LanguageToggle from "./language-toggle";
+import { useI18n } from "@/lib/i18n/context";
 
-export default async function SiteHeader() {
-  const session = await auth();
+export default function SiteHeader() {
+  const { data: session } = useSession();
   const email = session?.user?.email;
-  const dict = await getDictionary();
+  const { dict } = useI18n();
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/70 backdrop-blur-md dark:border-neutral-800/80 dark:bg-neutral-950/70">

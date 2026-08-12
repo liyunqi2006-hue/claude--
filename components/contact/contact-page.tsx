@@ -62,10 +62,10 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="relative z-10 space-y-10 my-16 lg:my-0">
+          <div className="relative z-10 space-y-12 my-16 lg:my-0">
             <div className="flex items-start gap-5 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.4s_forwards]">
-              <div className="flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
-                <Mail className="w-6 h-6" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
+                <Mail className="w-9 h-9" strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-base font-semibold mb-2 opacity-90">
@@ -78,8 +78,8 @@ export default function ContactPage() {
             </div>
 
             <div className="flex items-start gap-5 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.6s_forwards]">
-              <div className="flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
-                <MessageCircle className="w-6 h-6" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
+                <MessageCircle className="w-9 h-9" strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-base font-semibold mb-2 opacity-90">
@@ -94,8 +94,8 @@ export default function ContactPage() {
             </div>
 
             <div className="flex items-start gap-5 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.8s_forwards]">
-              <div className="flex-shrink-0 w-12 h-12 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
-                <Clock className="w-6 h-6" strokeWidth={1.5} />
+              <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
+                <Clock className="w-9 h-9" strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-base font-semibold mb-2 opacity-90">
@@ -163,7 +163,7 @@ export default function ContactPage() {
               <div className="group">
                 <label
                   htmlFor="email"
-                  className="block text-xs text-neutral-600 mb-3 uppercase tracking-wider font-medium"
+                  className="block text-base text-neutral-800 mb-3 tracking-wide font-bold"
                 >
                   你的邮箱
                 </label>
@@ -180,7 +180,7 @@ export default function ContactPage() {
               <div className="group">
                 <label
                   htmlFor="orderNo"
-                  className="block text-xs text-neutral-600 mb-3 uppercase tracking-wider font-medium"
+                  className="block text-base text-neutral-800 mb-3 tracking-wide font-bold"
                 >
                   订单号（可选）
                 </label>
@@ -196,7 +196,7 @@ export default function ContactPage() {
               <div className="group">
                 <label
                   htmlFor="message"
-                  className="block text-xs text-neutral-600 mb-3 uppercase tracking-wider font-medium"
+                  className="block text-base text-neutral-800 mb-3 tracking-wide font-bold"
                 >
                   详细描述你的问题
                 </label>

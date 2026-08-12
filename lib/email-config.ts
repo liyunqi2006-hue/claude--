@@ -13,6 +13,9 @@ export const EMAIL_CONFIG = {
 
   // 管理员通知邮箱
   ADMIN_EMAIL: process.env.ADMIN_NOTIFY_EMAIL || "",
+
+  // 客服/联系我们收件邮箱（不配则回落到 ADMIN_EMAIL，再回落到 SMTP_USER 自己发给自己）
+  SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || "",
 };
 
 // 验证邮件配置是否完整

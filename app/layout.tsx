@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import ThemeInitializer from "@/components/theme-initializer";
+import TranslationGuard from "@/components/translation-guard";
 import { getLocale, dictionaryFor } from "@/lib/i18n/server";
 import { HTML_LANG } from "@/lib/i18n/config";
 import { I18nProvider } from "@/lib/i18n/context";
@@ -29,12 +31,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+        <TranslationGuard />
         <ThemeInitializer />
-        <I18nProvider locale={locale} dict={dict}>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-        </I18nProvider>
+        <SessionProvider>
+          <I18nProvider locale={locale} dict={dict}>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+          </I18nProvider>
+        </SessionProvider>
       </body>
     </html>
   );

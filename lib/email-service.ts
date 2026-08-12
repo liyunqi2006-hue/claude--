@@ -441,6 +441,67 @@ print(message.content)</code></pre>
   });
 }
 
+// 发送联系我们留言（转发到客服邮箱）
+export async function sendContactMessage(params: {
+  fromEmail: string;
+  orderNo?: string;
+  message: string;
+}): Promise<boolean> {
+  const to = EMAIL_CONFIG.SUPPORT_EMAIL || EMAIL_CONFIG.ADMIN_EMAIL || EMAIL_CONFIG.SMTP_USER;
+  if (!to) {
+    console.warn("未配置客服收件邮箱，联系我们留言未发送。");
+    return false;
+  }
+
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  const subject = `联系我们留言 - ${params.fromEmail}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { padding: 16px 0; border-bottom: 2px solid #2a5298; }
+        .info { background: #F9FAFB; border-radius: 8px; padding: 16px; margin: 16px 0; }
+        .row { padding: 8px 0; border-bottom: 1px solid #E5E7EB; }
+        .row:last-child { border-bottom: none; }
+        .label { color: #6B7280; font-size: 13px; }
+        .message { white-space: pre-wrap; background: #F3F4F6; border-radius: 8px; padding: 16px; margin-top: 8px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2 style="margin: 0; color: #2a5298;">📨 新的联系我们留言</h2>
+        </div>
+        <div class="info">
+          <div class="row"><span class="label">来信邮箱：</span> ${esc(params.fromEmail)}</div>
+          <div class="row"><span class="label">订单号：</span> ${params.orderNo ? esc(params.orderNo) : "（未填写）"}</div>
+          <div class="row"><span class="label">时间：</span> ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
+        </div>
+        <div>
+          <div class="label">留言内容：</div>
+          <div class="message">${esc(params.message)}</div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text: `联系我们留言\n来信邮箱：${params.fromEmail}\n订单号：${params.orderNo || "（未填写）"}\n\n${params.message}`,
+    // 便于客服直接回复用户
+    replyTo: params.fromEmail,
+  });
+}
+
 // 发送管理员通知（新订单）
 export async function sendAdminNotification(
   orderNo: string,
