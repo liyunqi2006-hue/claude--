@@ -4,7 +4,6 @@ import SubscriptionPicker from "@/components/subscription-picker";
 import HowItWorks from "@/components/how-it-works";
 import ServiceNotes from "@/components/service-notes";
 import FAQ from "@/components/faq";
-import ApiPromoBanner from "@/components/api-promo-banner";
 import { SubscriptionProvider } from "@/components/subscription-context";
 
 export default async function HomePage() {
@@ -27,7 +26,6 @@ export default async function HomePage() {
       <HowItWorks />
       <ServiceNotes />
       <FAQ />
-      <ApiPromoBanner />
     </main>
   );
 }
