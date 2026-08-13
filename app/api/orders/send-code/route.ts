@@ -5,7 +5,6 @@ import { sendVerificationCode } from "@/lib/email-service";
 
 const sendCodeSchema = z.object({
   email: z.string().email(),
-  orderNo: z.string().min(1),
 });
 
 export async function POST(request: Request) {
@@ -17,19 +16,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
     }
 
-    const { email, orderNo } = parsed.data;
+    const { email } = parsed.data;
 
-    // 验证订单是否存在且邮箱匹配
+    // 校验该邮箱是否有订单（无订单也返回成功，避免暴露邮箱是否下过单）
     const { prisma } = await import("@/lib/prisma");
     const order = await prisma.order.findFirst({
-      where: {
-        orderNo,
-        contactEmail: email,
-      },
+      where: { contactEmail: email },
     });
 
     if (!order) {
-      return NextResponse.json({ error: "Order not found or email mismatch" }, { status: 404 });
+      // 不泄露"该邮箱没有订单"，直接返回成功，但不实际发码
+      return NextResponse.json({ success: true });
     }
 
     // 生成验证码

@@ -72,10 +72,9 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
   const router = useRouter();
   const { dict, locale } = useI18n();
   const dateLocale = HTML_LANG[locale];
-  const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [orderNo, setOrderNo] = useState("");
   const [code, setCode] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [sending, setSending] = useState(false);
   const [querying, setQuerying] = useState(false);
@@ -91,21 +90,21 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
   }
 
   async function requestCode() {
-    if (!email || !orderNo || cooldown > 0) return;
+    if (!email || cooldown > 0 || sending) return;
     setSending(true);
     setError(null);
     try {
       const res = await fetch("/api/orders/send-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, orderNo }),
+        body: JSON.stringify({ email }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "发送验证码失败，请检查邮箱和订单号");
+        setError(data.error ?? "发送验证码失败，请检查邮箱");
         return;
       }
-      setStep("code");
+      setCodeSent(true);
       setCooldown(60);
       const timer = setInterval(() => {
         setCooldown((c) => {
@@ -161,91 +160,67 @@ export default function OrderLookupClient({ recentOrders }: { recentOrders: Look
         </section>
       )}
 
-      <div className="flex items-center gap-4">
-        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-        <span className="text-sm text-neutral-400">{dict.common.or}</span>
-        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-      </div>
+      {recentOrders.length > 0 && (
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+          <span className="text-sm text-neutral-400">{dict.common.or}</span>
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+        </div>
+      )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-neutral-500 dark:text-neutral-400">{dict.lookup.byEmailTitle}</h2>
-        <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
+        <h2 className="mb-2 text-2xl font-semibold text-neutral-900 dark:text-neutral-100">{dict.lookup.byEmailTitle}</h2>
+        <p className="mb-8 text-sm text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
           {dict.lookup.byEmailNote}
         </p>
-        <form onSubmit={handleLookup} className="space-y-3">
-          {step === "email" ? (
-            <>
-              <input
-                type="text"
-                required
-                value={orderNo}
-                onChange={(e) => setOrderNo(e.target.value.toUpperCase())}
-                placeholder="订单号 (例如: ORD123ABC)"
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
-              />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={dict.lookup.emailPlaceholder}
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
-              />
-              <button
-                type="button"
-                onClick={requestCode}
-                disabled={!email || !orderNo || sending}
-                className="w-full rounded-lg bg-brand-700 py-2.5 font-medium text-white transition hover:bg-brand-600 disabled:opacity-50"
-              >
-                {sending ? "发送中..." : "发送验证码"}
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="rounded-lg bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-                <p className="text-neutral-600 dark:text-neutral-400">验证码已发送至:</p>
-                <p className="font-medium">{email}</p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("email");
-                    setCode("");
-                    setError(null);
-                  }}
-                  className="mt-2 text-brand-600 hover:underline"
-                >
-                  修改邮箱
-                </button>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  required
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder={dict.lookup.codePlaceholder}
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-950"
-                />
-                <button
-                  type="button"
-                  onClick={requestCode}
-                  disabled={cooldown > 0 || sending}
-                  className="shrink-0 rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                  {cooldown > 0 ? `${cooldown}s` : "重新发送"}
-                </button>
-              </div>
-              <button
-                type="submit"
-                disabled={querying || !code}
-                className="w-full rounded-lg bg-brand-700 py-2.5 font-medium text-white transition hover:bg-brand-600 disabled:opacity-50"
-              >
-                {querying ? dict.lookup.querying : dict.lookup.query}
-              </button>
-            </>
-          )}
+        <form onSubmit={handleLookup} className="space-y-6">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="下单时填写的接收邮箱"
+            className="w-full rounded-xl border-2 border-neutral-200 bg-neutral-50 px-4 py-3 text-base transition-all duration-300 focus:outline-none focus:border-[#2a5298] focus:bg-white focus:-translate-y-1 focus:shadow-[0_10px_25px_-10px_rgba(42,82,152,0.6)] placeholder:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:bg-neutral-950"
+          />
+
+          <div className="flex items-stretch gap-3">
+            <input
+              type="text"
+              required
+              inputMode="numeric"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              placeholder="6 位验证码"
+              className="min-w-0 flex-1 rounded-xl border-2 border-neutral-200 bg-neutral-50 px-4 py-3 text-base transition-all duration-300 focus:outline-none focus:border-[#2a5298] focus:bg-white focus:-translate-y-1 focus:shadow-[0_10px_25px_-10px_rgba(42,82,152,0.6)] placeholder:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:bg-neutral-950"
+            />
+            <button
+              type="button"
+              onClick={requestCode}
+              disabled={!email || cooldown > 0 || sending}
+              className="shrink-0 whitespace-nowrap rounded-xl border-2 border-[#2a5298] px-5 text-sm font-semibold text-[#2a5298] transition-all duration-300 hover:bg-[#2a5298] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#2a5298] dark:border-[#5b7fc7] dark:text-[#8fb0e8] dark:hover:bg-[#2a5298] dark:hover:text-white"
+            >
+              {sending
+                ? "发送中..."
+                : cooldown > 0
+                  ? `${cooldown}s`
+                  : codeSent
+                    ? "重新发送"
+                    : "发送验证码"}
+            </button>
+          </div>
+
+          <p className="text-xs leading-relaxed text-neutral-400 dark:text-neutral-500">
+            为保护隐私，订单不公开展示，需验证下单邮箱后才可查看。验证码 10 分钟有效。
+          </p>
+
+          <button
+            type="submit"
+            disabled={querying || !email || !code}
+            className="w-full py-[18px] px-8 bg-gradient-to-r from-[#2a5298] to-[#7e22ce] text-white rounded-xl text-base font-semibold transition-all duration-300 shadow-[0_4px_20px_rgba(42,82,152,0.3)] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(42,82,152,0.4)] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            {querying ? dict.lookup.querying : dict.lookup.query}
+          </button>
         </form>
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 

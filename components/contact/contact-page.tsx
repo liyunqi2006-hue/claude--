@@ -67,7 +67,7 @@ export default function ContactPage() {
               <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
                 <Mail className="w-9 h-9" strokeWidth={2.5} />
               </div>
-              <div>
+              <div className="flex min-h-16 flex-col justify-center">
                 <h3 className="text-base font-semibold mb-2 opacity-90">
                   电子邮件
                 </h3>
@@ -81,7 +81,7 @@ export default function ContactPage() {
               <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
                 <MessageCircle className="w-9 h-9" strokeWidth={2.5} />
               </div>
-              <div>
+              <div className="flex min-h-16 flex-col justify-center">
                 <h3 className="text-base font-semibold mb-2 opacity-90">
                   在线客服
                 </h3>
@@ -97,7 +97,7 @@ export default function ContactPage() {
               <div className="flex-shrink-0 w-16 h-16 border-[3px] border-white/40 rounded-2xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/70 hover:-translate-y-0.5">
                 <Clock className="w-9 h-9" strokeWidth={2.5} />
               </div>
-              <div>
+              <div className="flex min-h-16 flex-col justify-center">
                 <h3 className="text-base font-semibold mb-2 opacity-90">
                   响应时效
                 </h3>
