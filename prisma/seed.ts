@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -27,14 +26,10 @@ async function main() {
     skipDuplicates: true,
   });
 
-  const adminPasswordHash = await bcrypt.hash("ChangeMe123!", 10);
-  await prisma.adminUser.upsert({
-    where: { username: "admin" },
-    update: {},
-    create: { username: "admin", passwordHash: adminPasswordHash, role: "admin" },
-  });
+  // 注意：不在种子数据中创建管理员账号，避免留下默认弱口令后门。
+  // 管理员账号请通过专用脚本或手动方式安全创建。
 
-  console.log("种子数据写入完成，默认管理员账号 admin / ChangeMe123!（请上线前修改）");
+  console.log("种子数据写入完成（商品目录）。");
 }
 
 main()

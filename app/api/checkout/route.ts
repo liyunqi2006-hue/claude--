@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const amountUSD = Number(product.priceUSD) * quantity;
   const orderNo = generateOrderNo();
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // USDT 支付 1 小时超时
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // USDT 支付 24 小时超时
 
   const order = await prisma.order.create({
     data: {

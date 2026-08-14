@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { cancelExpiredOrders } from "@/lib/orders";
 
 const schema = z.object({
   email: z.string().email(),
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
   }
 
   await prisma.verificationCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
+
+  await cancelExpiredOrders();
 
   const orders = await prisma.order.findMany({
     where: { contactEmail: email },

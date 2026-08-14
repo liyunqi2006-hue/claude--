@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getDictionary } from "@/lib/i18n/server";
 import OrderLookupClient from "./order-lookup-client";
+
+export const metadata: Metadata = {
+  title: "查询订单状态",
+  description:
+    "输入下单邮箱并通过验证码查询你的 Claude 代付订单状态与支付进度。为保护隐私，需验证邮箱后才可查看订单。",
+  alternates: { canonical: "/orders/lookup" },
+  robots: { index: false, follow: true },
+};
 
 export default async function OrderLookupPage() {
   const cookieStore = await cookies();
@@ -35,7 +44,7 @@ export default async function OrderLookupPage() {
   return (
     <main className="flex flex-1 flex-col lg:flex-row">
       {/* 左侧渐变面板 */}
-      <div className="relative flex-none lg:w-[40%] bg-gradient-to-br from-[#1e3c72] via-[#2a5298] to-[#7e22ce] text-white p-12 lg:p-20 flex flex-col justify-between overflow-hidden opacity-0 animate-[fadeInLeft_0.8s_ease-out_0.2s_forwards]">
+      <div className="relative flex-none lg:w-[40%] bg-gradient-to-br from-[#1e3c72] via-[#2a5298] to-[#7e22ce] text-white p-12 lg:p-20 flex flex-col overflow-hidden opacity-0 animate-[fadeInLeft_0.8s_ease-out_0.2s_forwards]">
         <div className="absolute top-[-50%] right-[-50%] w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] animate-pulse-slow" />
         <div className="relative z-10">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
@@ -45,12 +54,12 @@ export default async function OrderLookupPage() {
             {dict.lookup.subtitle}
           </p>
         </div>
-        <div className="relative z-10 mt-12 space-y-6 lg:mt-0">
+        <div className="relative z-10 mt-10 space-y-6">
           <div className="flex items-start gap-4 opacity-0 animate-[fadeInUp_0.6s_ease-out_0.4s_forwards]">
             <div className="flex-shrink-0 w-11 h-11 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
               <span className="text-lg font-bold">1</span>
             </div>
-            <p className="pt-2 text-[0.95rem] opacity-80 font-light">
+            <p className="pt-1.5 text-lg opacity-90 font-medium">
               填写下单时使用的邮箱
             </p>
           </div>
@@ -58,7 +67,7 @@ export default async function OrderLookupPage() {
             <div className="flex-shrink-0 w-11 h-11 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
               <span className="text-lg font-bold">2</span>
             </div>
-            <p className="pt-2 text-[0.95rem] opacity-80 font-light">
+            <p className="pt-1.5 text-lg opacity-90 font-medium">
               接收邮箱验证码完成身份验证
             </p>
           </div>
@@ -66,7 +75,7 @@ export default async function OrderLookupPage() {
             <div className="flex-shrink-0 w-11 h-11 border-2 border-white/30 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5">
               <span className="text-lg font-bold">3</span>
             </div>
-            <p className="pt-2 text-[0.95rem] opacity-80 font-light">
+            <p className="pt-1.5 text-lg opacity-90 font-medium">
               查看订单状态与支付进度
             </p>
           </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/admin-session";
+import { cancelExpiredOrders } from "@/lib/orders";
 import { redirect } from "next/navigation";
 
 const orderStatusLabels: Record<string, string> = {
@@ -17,6 +18,8 @@ export default async function AdminOrdersPage() {
   if (!session) {
     redirect("/admin/login");
   }
+
+  await cancelExpiredOrders();
 
   const orders = await prisma.order.findMany({
     include: {

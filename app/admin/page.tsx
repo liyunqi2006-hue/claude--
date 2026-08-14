@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { getAdminSession } from "@/lib/admin-session";
 import { prisma } from "@/lib/prisma";
+import { cancelExpiredOrders } from "@/lib/orders";
 
 export default async function AdminHomePage() {
   const session = await getAdminSession();
   // 允许无登录访问（通过隐藏按键设置密码）
+
+  await cancelExpiredOrders();
 
   // 获取统计数据
   const [

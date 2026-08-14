@@ -124,6 +124,26 @@ export const en: Dictionary = {
         q: "Can I get a refund?",
         a: "You can request a cancellation and refund before the official activation link is sent. Once the link is sent, the service is considered delivered and refunds are no longer supported. See the Refund Policy for details.",
       },
+      {
+        q: "How do I pay for Claude Pro without a foreign credit card?",
+        a: "You don't need one. The biggest hurdle for many users is lacking a card that supports overseas billing — that's exactly what this site solves. Just pay with USDT (TRC20) and we place the subscription order through official channels, with no need for your own Visa/Mastercard or foreign payment account.",
+      },
+      {
+        q: "How do I pay for a Claude subscription? What methods are supported?",
+        a: "We currently use USDT (TRC20) crypto payment. After picking a plan, click 'Buy Now' and the page shows a wallet address and QR code — transfer the amount from any TRC20-capable wallet or exchange, and we start the proxy payment once it arrives.",
+      },
+      {
+        q: "What's the difference between Claude Pro and Max (Max5x / Max20x)?",
+        a: "Pro is the base subscription for everyday use; Max5x and Max20x provide roughly 5x and 20x the usage of Pro, aimed at heavy users and developers. All three can be activated here via proxy payment, with transparent pricing shown in the plan picker.",
+      },
+      {
+        q: "How long until activation? Where is the activation link sent?",
+        a: "After payment and manual verification, the official order is placed in as little as 1 hour, and Anthropic sends the email with the activation link directly to the address you entered at checkout — click it to start using your subscription.",
+      },
+      {
+        q: "Is it my own account? Is there any ban risk?",
+        a: "The proxy payment is applied to the official account tied to the email you specify, so the subscription belongs to you. We order through legitimate official channels without any policy-violating methods, minimizing account risk.",
+      },
     ],
   },
   apiHowItWorks: {

@@ -28,7 +28,16 @@ export default async function PaymentPage({
     redirect("/");
   }
 
-  // 已支付的订单跳转到结果页
+  // 待支付但已超过有效期：标记为已取消
+  if (order.status === "pending" && order.expiresAt < new Date()) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: "cancelled" },
+    });
+    redirect(`/orders/${orderId}/result`);
+  }
+
+  // 已支付/已取消等非待支付订单跳转到结果页
   if (order.status !== "pending") {
     redirect(`/orders/${orderId}/result`);
   }

@@ -30,12 +30,19 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
+interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+}
+
 interface EmailOptions {
   to: string;
   subject: string;
   html: string;
   text?: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 }
 
 // 发送邮件
@@ -57,6 +64,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       html: options.html,
       text: options.text,
       replyTo: options.replyTo,
+      attachments: options.attachments,
     });
 
     console.log("Email sent:", info.messageId);
@@ -542,5 +550,108 @@ export async function sendAdminNotification(
     to: EMAIL_CONFIG.ADMIN_EMAIL,
     subject,
     html,
+  });
+}
+
+// 管理员通知：用户声称已付款，需人工核对链上到账
+export async function sendAdminPaymentNotification(
+  orderNo: string,
+  productName: string,
+  amount: string,
+  contactEmail: string,
+  usdtAddress: string
+) {
+  if (!EMAIL_CONFIG.ADMIN_EMAIL) {
+    return false;
+  }
+
+  const subject = `【待核对付款】${orderNo}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: monospace; line-height: 1.6; }
+        .order-info { background: #fff7ed; padding: 15px; border-radius: 5px; border: 1px solid #fdba74; }
+        .warn { color: #b45309; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <h2>💰 用户声称已付款（待核对）</h2>
+      <div class="order-info">
+        <p><strong>订单号:</strong> ${orderNo}</p>
+        <p><strong>商品:</strong> ${productName}</p>
+        <p><strong>应收金额:</strong> $${amount}</p>
+        <p><strong>客户邮箱:</strong> ${contactEmail}</p>
+        <p><strong>收款地址:</strong> ${usdtAddress}</p>
+        <p><strong>时间:</strong> ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</p>
+      </div>
+      <p class="warn">⚠️ 该状态仅为用户点击「我已付款」，系统未自动核实链上到账。请在 TronScan 核对该地址实际收款金额后再发货。</p>
+      <p>核对地址：https://tronscan.org/#/address/${usdtAddress}</p>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: EMAIL_CONFIG.ADMIN_EMAIL,
+    subject,
+    html,
+  });
+}
+
+// 管理员通知：用户上传了付款截图（截图作为附件，可直接在邮箱查看）
+export async function sendAdminPaymentProof(
+  orderNo: string,
+  productName: string,
+  amount: string,
+  contactEmail: string,
+  usdtAddress: string,
+  proof: { filename: string; content: Buffer; contentType?: string }
+) {
+  if (!EMAIL_CONFIG.ADMIN_EMAIL) {
+    return false;
+  }
+
+  const subject = `【付款截图】${orderNo}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: monospace; line-height: 1.6; }
+        .order-info { background: #eff6ff; padding: 15px; border-radius: 5px; border: 1px solid #93c5fd; }
+        .warn { color: #b45309; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <h2>🧾 用户上传了付款截图</h2>
+      <div class="order-info">
+        <p><strong>订单号:</strong> ${orderNo}</p>
+        <p><strong>商品:</strong> ${productName}</p>
+        <p><strong>应收金额:</strong> $${amount}</p>
+        <p><strong>客户邮箱:</strong> ${contactEmail}</p>
+        <p><strong>收款地址:</strong> ${usdtAddress}</p>
+        <p><strong>时间:</strong> ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</p>
+      </div>
+      <p>📎 付款截图见本邮件附件。</p>
+      <p class="warn">⚠️ 截图仅供参考，请务必在 TronScan 核对该地址实际收款金额后再发货。</p>
+      <p>核对地址：https://tronscan.org/#/address/${usdtAddress}</p>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: EMAIL_CONFIG.ADMIN_EMAIL,
+    subject,
+    html,
+    attachments: [
+      {
+        filename: proof.filename,
+        content: proof.content,
+        contentType: proof.contentType,
+      },
+    ],
   });
 }

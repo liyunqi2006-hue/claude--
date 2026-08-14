@@ -29,6 +29,7 @@ export default function PaymentClient({
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [proofUploaded, setProofUploaded] = useState(false);
 
   // 生成二维码
   useEffect(() => {
@@ -97,16 +98,18 @@ export default function PaymentClient({
       });
 
       if (res.ok) {
-        alert("上传成功！我们会尽快确认您的付款");
-        handleConfirmPayment();
+        setProofUploaded(true);
+        alert("截图上传成功！确认已完成转账后，请点击下方「我已付款」按钮。");
       } else {
-        alert("上传失败，请稍后再试");
+        const data = await res.json().catch(() => ({}));
+        alert(data.error ?? "上传失败，请稍后再试");
       }
     } catch (err) {
       console.error("Upload failed:", err);
       alert("上传失败，请稍后再试");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -181,7 +184,11 @@ export default function PaymentClient({
           />
           <span className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-brand bg-brand-50 px-6 py-3 font-medium text-brand transition hover:bg-brand-100 dark:bg-brand/10 dark:hover:bg-brand/20">
             <Upload size={20} />
-            {uploading ? "上传中..." : dict.payment.uploadProof}
+            {uploading
+              ? "上传中..."
+              : proofUploaded
+                ? "重新上传截图"
+                : dict.payment.uploadProof}
           </span>
         </label>
 

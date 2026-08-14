@@ -6,8 +6,8 @@ export const PAYMENT_CONFIG = {
   // USD 到 USDT 汇率（建议 1.02 覆盖手续费）
   USD_TO_USDT_RATE: parseFloat(process.env.USD_TO_USDT_RATE || "1.02"),
 
-  // 支付超时时间（分钟）
-  PAYMENT_TIMEOUT_MINUTES: 60,
+  // 支付超时时间（分钟）—— 24 小时
+  PAYMENT_TIMEOUT_MINUTES: 24 * 60,
 };
 
 // 计算 USDT 金额
