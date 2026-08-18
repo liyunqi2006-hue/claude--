@@ -72,7 +72,7 @@ export default function ContactPage() {
                   电子邮件
                 </h3>
                 <p className="text-[0.95rem] opacity-70 font-light leading-relaxed">
-                  3818051816@qq.com
+                  liyunqi2006@qq.com
                 </p>
               </div>
             </div>
