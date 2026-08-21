@@ -1,4 +1,5 @@
-import type { SubscriptionDuration, SubscriptionPlan } from "@prisma/client";
+export type SubscriptionPlan = "pro" | "max5x" | "max20x";
+export type SubscriptionDuration = "month" | "quarter" | "half_year" | "year";
 
 export interface PriceBreakdown {
   total: number;

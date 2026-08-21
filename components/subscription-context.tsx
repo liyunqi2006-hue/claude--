@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import type { SubscriptionDuration, SubscriptionPlan } from "@prisma/client";
+import type { SubscriptionDuration, SubscriptionPlan } from "@/lib/pricing";
 
 interface SubscriptionContextValue {
   plan: SubscriptionPlan;

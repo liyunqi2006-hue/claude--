@@ -1,53 +1,22 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum ProductType {
-  subscription
-  api_credit
-}
-
-enum SubscriptionPlan {
-  pro
-  max5x
-  max20x
-}
-
-enum SubscriptionDuration {
-  month
-  quarter
-  half_year
-  year
-}
-
-enum OrderStatus {
-  pending
-  paid
-  fulfilling
-  completed
-  refunded
-  cancelled
-}
-
-enum PayChannel {
-  usdt
-}
-
-enum AdminRole {
-  admin
-  operator
-}
+// NOTE: Local dev uses SQLite; enums are stored as String.
+// ProductType: subscription | api_credit
+// SubscriptionPlan: pro | max5x | max20x
+// SubscriptionDuration: month | quarter | half_year | year
+// OrderStatus: pending | paid | fulfilling | completed | refunded | cancelled
+// PayChannel: usdt
+// AdminRole: admin | operator
 
 model User {
   id            String    @id @default(cuid())
@@ -62,16 +31,16 @@ model User {
 }
 
 model Product {
-  id           String                @id @default(cuid())
-  type         ProductType
-  plan         SubscriptionPlan?
-  duration     SubscriptionDuration?
-  creditAmount Decimal?              @db.Decimal(10, 2)
+  id           String    @id @default(cuid())
+  type         String
+  plan         String?
+  duration     String?
+  creditAmount Decimal?
   name         String
-  priceUSD     Decimal               @db.Decimal(10, 2)
-  active       Boolean               @default(true)
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
+  priceUSD     Decimal
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   orders       Order[]
 
   @@map("products")
@@ -85,9 +54,9 @@ model Order {
   productId        String
   product          Product       @relation(fields: [productId], references: [id])
   quantity         Int           @default(1)
-  totalUSD         Decimal       @db.Decimal(10, 2)
-  status           OrderStatus   @default(pending)
-  payChannel       PayChannel?
+  totalUSD         Decimal
+  status           String        @default("pending")
+  payChannel       String?
   tradeNo          String?
   paidAt           DateTime?
   contactEmail     String
@@ -120,7 +89,7 @@ model AdminUser {
   id           String        @id @default(cuid())
   username     String        @unique
   passwordHash String
-  role         AdminRole     @default(operator)
+  role         String        @default("operator")
   createdAt    DateTime      @default(now())
   fulfillments Fulfillment[]
   auditLogs    AuditLog[]

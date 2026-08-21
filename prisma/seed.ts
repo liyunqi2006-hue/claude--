@@ -23,7 +23,6 @@ async function main() {
       { type: "api_credit", creditAmount: 300, name: "API 余额充值 $300 档", priceUSD: 318 },
       { type: "api_credit", creditAmount: 500, name: "API 余额充值 $500 档", priceUSD: 525 },
     ],
-    skipDuplicates: true,
   });
 
   // 注意：不在种子数据中创建管理员账号，避免留下默认弱口令后门。

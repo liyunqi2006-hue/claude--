@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { SubscriptionDuration, SubscriptionPlan } from "@prisma/client";
+import type { SubscriptionDuration, SubscriptionPlan } from "@/lib/pricing";
 import { DURATIONS, PLANS, PRICE_TABLE } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n/context";
 import { format } from "@/lib/i18n/config";

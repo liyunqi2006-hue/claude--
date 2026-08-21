@@ -1,5 +1,6 @@
-import type { OrderStatus } from "@prisma/client";
 import { getDictionary } from "@/lib/i18n/server";
+
+type OrderStatus = "pending" | "paid" | "fulfilling" | "completed" | "refunded" | "cancelled";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   pending: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
